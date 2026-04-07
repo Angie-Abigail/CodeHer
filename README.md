@@ -3,7 +3,7 @@
 - Abrir tu carpeta en Visual Code
 - Iniciar sesión con tu cuenta de GitHub  (Icono de usuario en la parte inferior izquierda)
 - Abrir la terminal y seleccionar Git Bash
-- Ejecutar o escribir `git clone link`
+- Ejecutar o escribir `git clone https://github.com/Angie-Abigail/CodeHer.git`
 
 ## Para abrir directamente el archivo clonado
 - Ir a Archivo
