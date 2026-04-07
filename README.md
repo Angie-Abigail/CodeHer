@@ -17,6 +17,18 @@
 ## Levantar el repositorio (Verlo en Google)
 - Escribir en la terminal `npm run dev`
 
+## Para hacer crear una rama
+- Verificar primero estar en `main`
+- Escribir en la terminar: `git checkout -b <nombre-de-la-rama>`
+
+## Para hacer un commit
+- Verificar primero que estas en tu rama
+- Escribir en terminal:
+1. git init
+2. git add .
+3. git commit -m "Nombre-de-commit"
+4. git push origin "Nombre-de-tu-rama"
+
 ## Credendiales de firebase
 - Hacer una copia del .env.local
 
