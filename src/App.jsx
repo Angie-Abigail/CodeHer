@@ -3,8 +3,20 @@ import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "./Context/AuthContext";
 import Inicio from "./Pages/Home/Inicio";
+import ProtectedRoute from "./Components/AdminRoute/AdminRoute";
 
-
+//Componentes Generales
+import Navbar from "./Components/Navbar/Navbar";
+import Login from "./Components/Login/Login";
+import Registro from "./Components/Registro/Registro";
+import Perfil from "./Components/DasboardPracticante/Perfil";
+import Dashboard from "./Components/DasboardPracticante/Dashboard";
+import UserMenu from "./Components/UserMenu/UserMenu";
+import DashboardNav from "./Components/DasboardPracticante/DashboardNav";
+import DashboardContent from "./Components/DasboardPracticante/DashboardContent";
+import VerPerfil from "./Components/DasboardPracticante/VerPerfil";
+import Mensajes from "./Components/DasboardPracticante/Mensajes";
+import CatalogoPracticantes from "./Pages/Catalogo/Catalogo";
 
 import "./App.css";
 
@@ -33,12 +45,15 @@ export default function App() {
   return (
 
 
-      
 
       <main className="min-h-[calc(100vh-64px)]">
         <Routes>
           {/* 📌 RUTAS PÚBLICAS */}
           <Route path="/" element={<Inicio searchQuery={searchQuery} />} />     
+          <Route path="/dashboard" element={<Perfil />} />
+          <Route path="/catalogo" element={<CatalogoPracticantes />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
         </Routes>
       </main>
 
