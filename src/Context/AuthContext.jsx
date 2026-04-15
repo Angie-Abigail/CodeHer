@@ -4,6 +4,8 @@ import {
   collection, query, where, getDocs, addDoc, updateDoc, doc 
 } from "firebase/firestore";
 
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 import { 
   getAuth, 
   signInWithPopup, 
@@ -31,6 +33,7 @@ export function AuthProvider({ children }) {
           nombre: firebaseUser.displayName,
           correo: firebaseUser.email,
           foto: firebaseUser.photoURL,
+          rol:"usuario",
         });
       } else {
         // No hay sesión
@@ -64,16 +67,28 @@ export function AuthProvider({ children }) {
 
   // 🟢 REGISTRO
   const register = async (data) => {
-    const nuevoUsuario = {
-      ...data,
-      rol: "usuario",
-      fechaRegistro: new Date(),
-    };
+  let fotoURL = "";
 
-    const docRef = await addDoc(collection(db, "usuariosbcp"), nuevoUsuario);
+  // 📸 SUBIR IMAGEN SI EXISTE
+  if (data.foto) {
+    const storage = getStorage();
+    const storageRef = ref(storage, `usuarios/${Date.now()}_${data.foto.name}`);
 
-    setUser({ id: docRef.id, ...nuevoUsuario });
+    await uploadBytes(storageRef, data.foto);
+    fotoURL = await getDownloadURL(storageRef);
+  }
+
+  const nuevoUsuario = {
+    ...data,
+    foto: fotoURL, // ✅ ahora es string
+    rol: "usuario",
+    fechaRegistro: new Date(),
   };
+
+  const docRef = await addDoc(collection(db, "usuariosbcp"), nuevoUsuario);
+
+  setUser({ id: docRef.id, ...nuevoUsuario });
+};
 
   // ✏️ ACTUALIZAR PERFIL
   const updateUser = async (id, newData) => {
@@ -94,6 +109,7 @@ export function AuthProvider({ children }) {
       nombre: googleUser.displayName,
       correo: googleUser.email,
       foto: googleUser.photoURL,
+      rol:"usuario",
     });
 
     return googleUser;
