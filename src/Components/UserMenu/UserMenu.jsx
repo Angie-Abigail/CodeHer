@@ -44,56 +44,52 @@ export default function UserMenu({ user }) {
       {/* TRIGGER */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg hover:bg-white/5 transition"
+        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition"
       >
-        {/* FOTO */}
+
+        {/* FOTO (MÁS GRANDE) */}
         {user?.foto ? (
           <img
             src={user.foto}
-            className="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-lg"
+            className="w-11 h-11 object-cover rounded-xl border border-white/20"
           />
         ) : (
-          <div
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg bg-white"
-          >
-            <User size={16} style={{ color: B }} />
+          <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-white">
+            <User size={20} style={{ color: B }} />
           </div>
         )}
 
-        {/* INFO (ocultar en mobile muy pequeño) */}
+        {/* INFO */}
         <div className="hidden sm:block text-left leading-tight">
-          <p className="text-white text-xs sm:text-sm font-semibold">
+          <p className="text-white text-sm font-semibold">
             {user?.nombre?.split(" ")[0]}
           </p>
-          <p className="text-[10px] sm:text-[11px] text-white/70">
+          <p className="text-xs text-white/70">
             {user?.rol === "lider" ? "Líder" : "Practicante"}
           </p>
         </div>
 
         <ChevronDown
-          size={16}
+          size={18}
           className={`text-white/70 transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
         />
       </button>
 
-      {/* DROPDOWN */}
+      {/* DROPDOWN (MÁS GRANDE) */}
       <div
-        className={`absolute right-0 mt-3 w-52 sm:w-56 md:w-60
-        bg-white shadow-lg border border-gray-100
+        className={`absolute right-0 mt-3 w-64
+        bg-white shadow-xl border border-gray-100
         transition-all duration-200 origin-top-right
-        rounded-lg overflow-hidden
-        ${
-          open
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
-        }`}
+        rounded-xl overflow-hidden
+        ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
+      `}
       >
 
         {/* HEADER */}
-        <div className="px-4 py-3 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-800 truncate">
+        <div className="px-5 py-4 border-b border-gray-100">
+          <p className="text-base font-semibold text-gray-800 truncate">
             {user?.nombre}
           </p>
           <p className="text-xs text-gray-400 truncate">
@@ -102,18 +98,18 @@ export default function UserMenu({ user }) {
         </div>
 
         {/* OPTIONS */}
-        <div className="py-1">
+        <div className="py-2">
 
           <button
             onClick={handleGoDashboard}
-            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+            className="w-full text-left px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
           >
             Mi panel
           </button>
 
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
+            className="w-full text-left px-5 py-3 text-sm text-red-500 hover:bg-red-50 transition"
           >
             Cerrar sesión
           </button>
@@ -121,7 +117,7 @@ export default function UserMenu({ user }) {
         </div>
 
         {/* ACCENT */}
-        <div className="h-[2px]" style={{ background: O }} />
+        <div className="h-[3px]" style={{ background: O }} />
       </div>
     </div>
   );

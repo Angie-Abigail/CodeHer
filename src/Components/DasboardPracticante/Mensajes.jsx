@@ -1,138 +1,85 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../Lib/firebase";
+import { useAuth } from "../../Context/AuthContext";
 
-const O = "#F47920";
 const B = "#003087";
 
 export default function Mensajes() {
-  const [activeChat, setActiveChat] = useState(1);
+  const { user } = useAuth();
+  const [mensajes, setMensajes] = useState([]);
 
-  const chats = [
-    {
-      id: 1,
-      name: "Reclutador BCP",
-      last: "Hola, revisamos tu perfil...",
-      unread: true,
-      messages: [
-        { from: "reclutador", text: "Hola, revisamos tu perfil." },
-        { from: "user", text: "Gracias por la oportunidad." },
-        { from: "reclutador", text: "Queremos agendar una entrevista." },
-      ],
-    },
-    {
-      id: 2,
-      name: "Talent Acquisition",
-      last: "Avance de proceso...",
-      unread: false,
-      messages: [
-        { from: "reclutador", text: "Avance de tu postulación." },
-        { from: "user", text: "Perfecto, quedo atento." },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchMensajes = async () => {
+      if (!user?.uid) return;
 
-  const chat = chats.find((c) => c.id === activeChat);
+      const q = query(
+        collection(db, "mensajes"),
+        where("para", "==", user.uid)
+      );
+
+      const snap = await getDocs(q);
+
+      const data = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      data.sort((a, b) => b.fecha?.seconds - a.fecha?.seconds);
+
+      setMensajes(data);
+    };
+
+    fetchMensajes();
+  }, [user?.uid]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 h-[75vh] flex overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm p-6">
 
-      {/* SIDEBAR CHATS */}
-      <div className="w-1/3 border-r border-gray-100 bg-gray-50">
+      {/* HEADER */}
+      <h2
+        className="text-base font-semibold mb-5"
+        style={{ color: B }}
+      >
+        Mis mensajes
+      </h2>
 
-        <div className="p-4 border-b">
-          <h2 className="text-sm font-bold" style={{ color: B }}>
-            Mensajes
-          </h2>
-          <p className="text-xs text-gray-500">
-            Conversaciones con reclutadores
+      {/* EMPTY STATE */}
+      {mensajes.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-gray-400 text-sm">
+            No tienes mensajes aún
           </p>
         </div>
+      ) : (
+        <div className="space-y-4">
 
-        <div className="overflow-y-auto h-full">
-          {chats.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setActiveChat(c.id)}
-              className={`w-full text-left px-4 py-3 border-b hover:bg-white transition ${
-                activeChat === c.id ? "bg-white" : ""
-              }`}
-            >
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-semibold text-gray-900">
-                  {c.name}
-                </p>
-
-                {/* NOTIFICACIÓN */}
-                {c.unread && (
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ background: O }}
-                  />
-                )}
-              </div>
-
-              <p className="text-xs text-gray-500 truncate">
-                {c.last}
-              </p>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* CHAT VIEW */}
-      <div className="flex-1 flex flex-col">
-
-        {/* HEADER CHAT */}
-        <div className="px-5 py-4 border-b">
-          <h3 className="text-sm font-bold text-gray-900">
-            {chat.name}
-          </h3>
-          <p className="text-xs text-gray-500">
-            Reclutador activo
-          </p>
-        </div>
-
-        {/* MESSAGES */}
-        <div className="flex-1 p-5 space-y-3 overflow-y-auto bg-white">
-
-          {chat.messages.map((msg, i) => (
+          {mensajes.map((m) => (
             <div
-              key={i}
-              className={`flex ${
-                msg.from === "user" ? "justify-end" : "justify-start"
-              }`}
+              key={m.id}
+              className="rounded-xl bg-gray-50 px-4 py-3 hover:bg-gray-100 transition"
             >
-              <div
-                className={`max-w-[70%] px-4 py-2 rounded-lg text-sm ${
-                  msg.from === "user"
-                    ? "bg-blue-900 text-white"
-                    : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {msg.text}
-              </div>
+
+              {/* sender */}
+              <p className="text-xs font-medium text-gray-500">
+                De: <span className="text-gray-700">{m.de}</span>
+              </p>
+
+              {/* message */}
+              <p className="text-sm text-gray-800 mt-1 leading-snug">
+                {m.mensaje}
+              </p>
+
+              {/* time */}
+              <p className="text-[11px] text-gray-400 mt-2">
+                {m.fecha?.toDate?.().toLocaleString?.() || ""}
+              </p>
+
             </div>
           ))}
 
         </div>
-
-        {/* INPUT */}
-        <div className="p-4 border-t flex gap-2 bg-gray-50">
-
-          <input
-            placeholder="Escribe un mensaje..."
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
-          />
-
-          <button
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white"
-            style={{ background: B }}
-          >
-            Enviar
-          </button>
-
-        </div>
-
-      </div>
+      )}
     </div>
   );
 }

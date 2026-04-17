@@ -22,6 +22,30 @@ import {
 } from "firebase/auth";
 
 const AuthContext = createContext();
+const getAreas = async () => {
+  const snapshot = await getDocs(collection(db, "areas"));
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+};
+
+const getCarreras = async () => {
+  const snapshot = await getDocs(collection(db, "carreras"));
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+};
+
+const getDisponibilidad = async () => {
+  const snapshot = await getDocs(collection(db, "disponibilidad"));
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+};
+
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
@@ -44,7 +68,7 @@ export function AuthProvider({ children }) {
     const docData = snapshot.docs[0];
 
     return {
-      id: docData.id,
+      uid: docData.id,
       ...docData.data()
     };
   };
@@ -69,7 +93,7 @@ export function AuthProvider({ children }) {
         // ✅ FALLBACK SI NO EXISTE O FALLA FIRESTORE
         else {
           setUser({
-            id: firebaseUser.uid,
+            uid: firebaseUser.uid,
             nombre: firebaseUser.displayName,
             correo: firebaseUser.email,
             foto: firebaseUser.photoURL,
@@ -83,7 +107,7 @@ export function AuthProvider({ children }) {
         // 🔥 FALLBACK DE EMERGENCIA
         if (firebaseUser) {
           setUser({
-            id: firebaseUser.uid,
+            uid: firebaseUser.uid,
             nombre: firebaseUser.displayName,
             correo: firebaseUser.email,
             foto: firebaseUser.photoURL,
@@ -116,7 +140,7 @@ export function AuthProvider({ children }) {
     const docData = snapshot.docs[0];
 
     const userData = {
-      id: docData.id,
+      uid: docData.id,
       ...docData.data()
     };
 
@@ -167,7 +191,7 @@ export function AuthProvider({ children }) {
     const docRef = await addDoc(collection(db, "usuariosbcp"), nuevoUsuario);
 
     setUser({
-      id: docRef.id,
+      uid: docRef.id,
       ...nuevoUsuario
     });
   };
@@ -234,7 +258,7 @@ export function AuthProvider({ children }) {
       });
 
       setUser({
-        id: newUserRef.id,
+        uid: newUserRef.id,
         nombre: googleUser.displayName,
         correo: googleUser.email,
         foto: googleUser.photoURL,
@@ -259,7 +283,10 @@ export function AuthProvider({ children }) {
         updateUser,
         loginGoogle,
         logout,
-        fetchUserFromDB
+        fetchUserFromDB,
+        getAreas,
+        getCarreras,
+        getDisponibilidad
       }}
     >
       {children}

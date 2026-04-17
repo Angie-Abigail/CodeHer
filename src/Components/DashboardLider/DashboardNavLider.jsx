@@ -12,6 +12,7 @@ export default function DashboardNavLider({ section, setSection }) {
   return (
     <div className="w-64 min-h-screen bg-[#F4F6FB] px-4 py-6 flex flex-col">
 
+<br />
       {/* USER */}
       <div className="flex items-center gap-3 px-3 mb-6">
         {user?.foto ? (

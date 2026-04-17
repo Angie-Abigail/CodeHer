@@ -1,7 +1,8 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../Lib/firebase.js";
+import { useAuth } from "../../Context/AuthContext.jsx"
 
 function Section({ title, subtitle }) {
   return (
@@ -43,10 +44,77 @@ function Field({ label, value }) {
   );
 }
 
+function ModalMensaje({ open, onClose, onSend }) {
+  const [mensaje, setMensaje] = useState("");
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center">
+
+      {/* BACKDROP */}
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+
+      {/* MODAL */}
+      <div className="relative bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
+
+        <h2 className="text-lg font-bold mb-4">Enviar mensaje</h2>
+
+        <textarea
+          value={mensaje}
+          onChange={(e) => setMensaje(e.target.value)}
+          className="w-full border rounded-lg p-3 text-sm"
+          rows={5}
+          placeholder="Escribe tu mensaje..."
+        />
+
+        <div className="flex justify-end gap-2 mt-4">
+
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm border rounded-lg"
+          >
+            Cancelar
+          </button>
+
+          <button
+            onClick={() => onSend(mensaje)}
+            className="px-4 py-2 text-sm text-white rounded-lg"
+            style={{ background: "#003087" }}
+          >
+            Enviar
+          </button>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function VerPracticante({ open, onClose, id }) {
   const [practicante, setPracticante] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openMessage, setOpenMessage] = useState(false);
+  const { user } = useAuth();
+const sendMessage = async (mensaje) => {
+  try {
+    await addDoc(collection(db, "mensajes"), {
+      de: user?.uid, // luego lo cambias por user.uid
+      para: id,
+      mensaje,
+      fecha: serverTimestamp(),
+      leido: false
+    });
 
+    setOpenMessage(false);
+  } catch (error) {
+    console.error("Error enviando mensaje:", error);
+  }
+};
+  
   useEffect(() => {
     if (!open || !id) return;
 
@@ -94,13 +162,19 @@ export default function VerPracticante({ open, onClose, id }) {
       {/* MODAL CON SCROLL */}
       <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-sm border border-gray-100">
 
-        {/* CLOSE */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center"
-        >
-          <X size={18} />
-        </button>
+        {/* ACTIONS TOP RIGHT */}
+<div className="absolute top-3 right-3 z-10 flex gap-2">
+  
+
+  {/* CLOSE */}
+  <button
+    onClick={onClose}
+    className="w-10 h-10 rounded-full bg-white shadow flex items-center justify-center"
+  >
+    <X size={18} />
+  </button>
+
+</div>
 
         <div className="p-8">
 
@@ -116,6 +190,16 @@ export default function VerPracticante({ open, onClose, id }) {
                 {/* HEADER */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                   <div className="h-12" />
+                  {/* BOTÓN ARRIBA DERECHA */}
+  <div className="absolute top-43 right-30">
+    <button
+      onClick={() => setOpenMessage(true)}
+      className="px-3 py-2 text-xs font-semibold rounded-lg text-white shadow"
+      style={{ background: "#003087" }}
+    >
+      Enviar mensaje
+    </button>
+  </div>
 
                   <div className="p-6 flex items-center gap-6 -mt-12">
 
@@ -127,6 +211,8 @@ export default function VerPracticante({ open, onClose, id }) {
                         />
                       )}
                     </div>
+
+                    
 
                     <div className="flex-1">
                       <h2 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -288,6 +374,14 @@ export default function VerPracticante({ open, onClose, id }) {
 
         </div>
       </div>
+
+      <ModalMensaje
+  open={openMessage}
+  onClose={() => setOpenMessage(false)}
+  onSend={sendMessage}
+/>
     </div>
+
+    
   );
 }

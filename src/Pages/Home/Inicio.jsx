@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import Footer from "../../Components/Footer/Footer.jsx";
+import Login from "../../Components/Login/Login.jsx";
 
 const O = "#F47920";
 
 export default function Inicio() {
   const [active, setActive] = useState(0);
+  const [showLogin, setShowLogin] = useState(false);
 
   const stats = [
     { value: "11M+", label: "clientes en el Perú" },
@@ -53,15 +55,23 @@ export default function Inicio() {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8">
               <button
-                className="px-5 sm:px-6 py-3 rounded-xl font-semibold transition hover:scale-105 w-full sm:w-auto"
-                style={{ background: O }}
-              >
-                Postular ahora
-              </button>
+  onClick={() => setShowLogin(true)}
+  className="px-5 sm:px-6 py-3 rounded-xl font-semibold transition hover:scale-105 w-full sm:w-auto"
+  style={{ background: O }}
+>
+  Postular ahora
+</button>
 
-              <button className="px-5 sm:px-6 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition w-full sm:w-auto">
-                Conocer más
-              </button>
+              <button
+  onClick={() =>
+    document.getElementById("porque-bcp")?.scrollIntoView({
+      behavior: "smooth",
+    })
+  }
+  className="px-5 sm:px-6 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition w-full sm:w-auto"
+>
+  Conocer más
+</button>
             </div>
 
             {/* STATS */}
@@ -116,14 +126,17 @@ export default function Inicio() {
       </div>
 
       {/* SECOND SECTION */}
-      <div className="mt-16 sm:mt-20 lg:mt-24 px-4 sm:px-6 md:px-16 lg:px-24 pb-20 sm:pb-24">
+      
 
-        <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">
-          ¿Por qué BCP?
-        </h2>
+      <div
+  id="porque-bcp"
+  className="mt-16 sm:mt-20 lg:mt-24 px-4 sm:px-6 md:px-16 lg:px-24 pb-20 sm:pb-24 scroll-mt-32"
+>
+  <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">
+    ¿Por qué BCP?
+  </h2>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-
+  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[
             {
               title: "Liderazgo",
@@ -153,6 +166,16 @@ export default function Inicio() {
 
         </div>
       </div>
+      
+      {showLogin && (
+  <Login
+    onClose={() => setShowLogin(false)}
+    irARegistro={() => {
+      setShowLogin(false);
+      // aquí luego puedes abrir registro si quieres
+    }}
+  />
+)}
 
       <Footer />
     </div>

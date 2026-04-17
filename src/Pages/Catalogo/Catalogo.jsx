@@ -82,8 +82,7 @@ const CatalogoPracticantes = () => {
       selectedCarreras.length === 0 || selectedCarreras.includes(p.carrera);
 
     const matchDisponibilidad =
-      selectedDisponibilidad.length === 0 ||
-      selectedDisponibilidad.includes(p.disponibilidad);
+      selectedDisponibilidad.length === 0 || selectedDisponibilidad.includes(p.disponibilidad);
 
     const q = searchQuery.toLowerCase();
 

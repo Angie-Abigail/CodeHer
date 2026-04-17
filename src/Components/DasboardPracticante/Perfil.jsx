@@ -112,15 +112,16 @@ const FloatingSelect = ({ label, name, value, onChange, options }) => {
 /* ─── MAIN ─── */
 
 export default function Perfil() {
-  const { user, updateUser, getAreas, getCarreras } = useAuth();
+  const { user, updateUser, getAreas, getCarreras, getDisponibilidad } = useAuth();
   const fileRef = useRef();
   const cvRef = useRef();
   const [areas, setAreas] = useState([]);
   const [carreras, setCarreras] = useState([]);
+  const [disponibilidad, setDisponibilidad] = useState([]);
 
   const [form, setForm] = useState({
     nombre: "", correo: "", universidad: "", ciclo: "",
-    area: "", areaId: "", carrera: "", carreraId: "", disponibilidad: "", linkedin: "", github: "",
+    area: "", areaId: "", carrera: "", carreraId: "", disponibilidad: "", disponibilidadId:"", linkedin: "", github: "",
     cv: null, foto: null,
   });
 
@@ -137,7 +138,7 @@ export default function Perfil() {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.uid) return;
     setForm({
       nombre: user.nombre || "", correo: user.correo || "",
       universidad: user.universidad || "", ciclo: user.ciclo || "",
@@ -157,9 +158,11 @@ export default function Perfil() {
     const cargarDatos = async () => {
       const areasData = await getAreas();
       const carrerasData = await getCarreras();
+      const disponibilidadData = await getDisponibilidad();
 
       setAreas(areasData);
       setCarreras(carrerasData);
+      setDisponibilidad(disponibilidadData);
     };
 
     cargarDatos();
@@ -191,8 +194,8 @@ export default function Perfil() {
   };
 
   const guardar = async () => {
-    if (!user?.id) return;
-    await updateUser(user.id, { ...form, ...listas });
+    if (!user?.uid) return;
+    await updateUser(user.uid, { ...form, ...listas });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -335,13 +338,32 @@ export default function Perfil() {
                     </select>
                   </div>
                 </div>
-                <FloatingSelect
-                  label="DISPONIBILIDAD"
-                  name="disponibilidad"
-                  value={form.disponibilidad}
-                  onChange={handleChange}
-                  options={["Full-time", "Part-time"]}
-                />
+                <div className="relative">
+                  <div className="relative">
+                    <select
+                      value={form.disponibilidadId}
+                      onChange={(e) => {
+                        const selected = disponibilidad.find(d => d.id === e.target.value);
+                        if (!selected) return;
+
+                        setForm(prev => ({
+                          ...prev,
+                          disponibilidad: selected.nombre,
+                          disponibilidadId: selected.id
+                        }));
+                      }}
+                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 outline-none appearance-none"
+                      style={{ borderColor: "#E2E8F0" }}
+                    >
+                      <option value="">Selecciona Disponibilidad</option>
+                      {disponibilidad.map(d => (
+                        <option key={d.id} value={d.id}>
+                          {d.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
