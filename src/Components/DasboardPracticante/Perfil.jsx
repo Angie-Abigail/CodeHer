@@ -1,241 +1,588 @@
 import { useAuth } from "../../Context/AuthContext";
-import {
-  Mail, User, Briefcase, BookOpen,
-  Heart, Award, Image as ImageIcon
-} from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+
+/* ─── BCP Brand Colors ─── */
+const BLUE = "#003087";
+const BLUE_MID = "#0052CC";
+const ORANGE = "#FF6B00";
+const ORANGE_LIGHT = "#FFF3E8";
+
+/* ─── Reusable Components ─── */
+
+const SectionTitle = ({ title, subtitle }) => (
+  <div className="mb-4">
+    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+      {title}
+    </h3>
+    {subtitle && (
+      <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
+    )}
+    <div className="mt-3 border-b border-gray-200"></div>
+  </div>
+);
+
+const FloatingInput = ({ label, name, value, onChange, type = "text", placeholder }) => {
+  const [focused, setFocused] = useState(false);
+  const active = focused || value;
+
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={focused ? placeholder || "" : ""}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="peer w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 placeholder-gray-300 transition-all duration-200 outline-none"
+        style={{
+          borderColor: focused ? BLUE_MID : "#E2E8F0",
+        }}
+      />
+      <label
+        className="absolute left-0 transition-all duration-200 pointer-events-none font-medium"
+        style={{
+          top: active ? "0px" : "20px",
+          fontSize: active ? "10px" : "13px",
+          color: focused ? BLUE_MID : "#94A3B8",
+          letterSpacing: active ? "0.05em" : "0",
+        }}
+      >
+        {label}
+      </label>
+      <div
+        className="absolute bottom-0 left-0 h-0.5 transition-all duration-300"
+        style={{
+          width: focused ? "100%" : "0%",
+          background: `linear-gradient(90deg, ${BLUE} 0%, ${ORANGE} 100%)`,
+        }}
+      />
+    </div>
+  );
+};
+
+const FloatingSelect = ({ label, name, value, onChange, options }) => {
+  const [focused, setFocused] = useState(false);
+  const active = focused || value;
+
+  return (
+    <div className="relative">
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="peer w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 transition-all duration-200 outline-none appearance-none cursor-pointer"
+        style={{ borderColor: focused ? BLUE_MID : "#E2E8F0" }}
+      >
+        <option value="" disabled />
+        {options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+      </select>
+      <label
+        className="absolute left-0 transition-all duration-200 pointer-events-none font-medium"
+        style={{
+          top: active ? "0px" : "20px",
+          fontSize: active ? "10px" : "13px",
+          color: focused ? BLUE_MID : "#94A3B8",
+          letterSpacing: active ? "0.05em" : "0",
+        }}
+      >
+        {label}
+      </label>
+      <div className="absolute right-0 bottom-3 text-gray-400 pointer-events-none">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      <div
+        className="absolute bottom-0 left-0 h-0.5 transition-all duration-300"
+        style={{
+          width: focused ? "100%" : "0%",
+          background: `linear-gradient(90deg, ${BLUE} 0%, ${ORANGE} 100%)`,
+        }}
+      />
+    </div>
+  );
+};
+
+/* ─── MAIN ─── */
 
 export default function Perfil() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, getAreas, getCarreras } = useAuth();
+  const fileRef = useRef();
+  const cvRef = useRef();
+  const [areas, setAreas] = useState([]);
+  const [carreras, setCarreras] = useState([]);
 
   const [form, setForm] = useState({
-    nombre: user?.nombre || "",
-    correo: user?.correo || "",
-    area: user?.area || "",
-    carrera: user?.carrera || "",
-    disponibilidad: user?.disponibilidad || "",
-    foto: user?.foto || null
+    nombre: "", correo: "", universidad: "", ciclo: "",
+    area: "", areaId: "", carrera: "", carreraId: "", disponibilidad: "", linkedin: "", github: "",
+    cv: null, foto: null,
   });
 
-  const [preview, setPreview] = useState(user?.foto || null);
+  const [preview, setPreview] = useState(null);
+  const [cvName, setCvName] = useState(null);
+  const [saved, setSaved] = useState(false);
 
   const [listas, setListas] = useState({
-    experiencia: user?.experiencia || [""],
-    cursos: user?.cursos || [""],
-    voluntariado: user?.voluntariado || [""],
-    capacitaciones: user?.capacitaciones || [""],
+    experiencia: "",
+    cursos: [],
+    capacitaciones: [],
+    motivaciones: "",
+    descripcion: "",
   });
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  useEffect(() => {
+    if (!user) return;
+    setForm({
+      nombre: user.nombre || "", correo: user.correo || "",
+      universidad: user.universidad || "", ciclo: user.ciclo || "",
+      area: user.area || "", carrera: user.carrera || "",
+      disponibilidad: user.disponibilidad || "", linkedin: user.linkedin || "",
+      github: user.github || "", cv: user.cv || null, foto: user.foto || null,
+      areaId: user.areaId || "", carreraId: user.carreraId || "",
+    });
+    setPreview(user.foto || null);
+    setListas({
+      experiencia: user.experiencia || "",
+      cursos: user.cursos || [],
+      capacitaciones: user.capacitaciones || [],
+      motivaciones: user.motivaciones || "",
+      descripcion: user.descripcion || "",
+    });
+    const cargarDatos = async () => {
+      const areasData = await getAreas();
+      const carrerasData = await getCarreras();
 
-  // 📸 IMAGEN
+      setAreas(areasData);
+      setCarreras(carrerasData);
+    };
+
+    cargarDatos();
+  }, [user]);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      alert("Solo JPG o PNG");
-      return;
-    }
-
     setForm({ ...form, foto: file });
     setPreview(URL.createObjectURL(file));
   };
 
-  // 🔁 LISTAS DINÁMICAS
-  const handleListChange = (tipo, index, value) => {
-    const nuevas = [...listas[tipo]];
-    nuevas[index] = value;
-    setListas({ ...listas, [tipo]: nuevas });
+  const handleCV = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setForm({ ...form, cv: file });
+    setCvName(file.name);
   };
 
-  const agregarItem = (tipo) => {
-    setListas({ ...listas, [tipo]: [...listas[tipo], ""] });
+  const addItem = (tipo, value) => {
+    if (!value.trim()) return;
+    setListas((prev) => ({ ...prev, [tipo]: [...prev[tipo], value] }));
   };
 
-  const eliminarItem = (tipo, index) => {
-    const nuevas = listas[tipo].filter((_, i) => i !== index);
-    setListas({ ...listas, [tipo]: nuevas.length ? nuevas : [""] });
+  const removeItem = (tipo, item) => {
+    setListas((prev) => ({ ...prev, [tipo]: prev[tipo].filter((i) => i !== item) }));
   };
 
   const guardar = async () => {
-    await updateUser(user.id, {
-      ...form,
-      experiencia: listas.experiencia.filter(Boolean),
-      cursos: listas.cursos.filter(Boolean),
-      voluntariado: listas.voluntariado.filter(Boolean),
-      capacitaciones: listas.capacitaciones.filter(Boolean),
-    });
-
-    alert("Perfil actualizado 🚀");
+    if (!user?.id) return;
+    await updateUser(user.id, { ...form, ...listas });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   };
 
-  const SECCIONES = [
-    { id: "experiencia", title: "Experiencia Laboral", icon: Briefcase },
-    { id: "cursos", title: "Cursos", icon: BookOpen },
-    { id: "voluntariado", title: "Voluntariado", icon: Heart },
-    { id: "capacitaciones", title: "Capacitaciones", icon: Award },
-  ];
+  /* ─── Lista labels & icons ─── */
+  const listaConfig = {
+    experiencia: { label: "Experiencia laboral", placeholder: "Ej: Asistente en área de TI · 2023" },
+    cursos: { label: "Cursos y certificaciones", placeholder: "Ej: Python · Coursera" },
+    capacitaciones: { label: "Capacitaciones", placeholder: "Ej: Agile · 2024" },
+    motivaciones: { label: "Motivaciones", placeholder: "Ej: Innovación tecnológica" },
+    descripcion: { label: "Descripción personal", placeholder: "Ej: Orientado a resultados" },
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+      <div className="space-y-6">
 
-      {/* HEADER */}
-      <div className="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            Editar Perfil
-          </h2>
-          <p className="text-gray-500">{user?.nombre}</p>
-        </div>
-      </div>
-
-      {/* DATOS PERSONALES */}
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">
-          Datos personales
-        </h3>
-
-        <div className="grid md:grid-cols-3 gap-6">
-
-          {/* FOTO */}
-          <div className="flex flex-col items-center">
-            {preview ? (
-              <img
-                src={preview}
-                className="w-32 h-32 rounded-full object-cover mb-3"
-              />
-            ) : (
-              <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                <ImageIcon className="text-gray-400" size={30} />
-              </div>
-            )}
-
-            <input
-              type="file"
-              accept="image/png, image/jpeg"
-              onChange={handleImage}
-              className="text-xs text-gray-600"
-            />
+        {/* ── Page Header ── */}
+        <div className="flex items-center justify-between">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold" style={{ color: BLUE }}>
+              Mi Perfil Profesional
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Esta información será evaluada por el equipo de reclutamiento BCP
+            </p>
           </div>
 
-          {/* FORM */}
-          <div className="md:col-span-2 space-y-4">
+        </div>
 
-            <div>
-              <label className="text-sm text-gray-700 font-medium">
-                Nombre
-              </label>
-              <div className="relative mt-1">
-                <User className="absolute left-3 top-2.5 text-gray-400" size={18}/>
-                <input
-                  name="nombre"
-                  value={form.nombre}
+        {/* ── Card 1: Identidad ── */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Card accent top */}
+
+          <div className="p-6">
+            <SectionTitle title="Datos personales" subtitle="Información básica de identificación" />
+
+            <div className="flex flex-col md:flex-row gap-8">
+              {/* ── Photo Upload ── */}
+              <div className="flex-shrink-0 flex flex-col items-center gap-3">
+                <div
+                  onClick={() => fileRef.current.click()}
+                  className="relative w-28 h-28 rounded-2xl overflow-hidden cursor-pointer group"
+                  style={{
+                    background: preview ? "transparent" : `linear-gradient(135deg, #EBF0FA 0%, #D6E0F5 100%)`,
+                    border: `2px dashed ${preview ? "transparent" : "#C0CDE8"}`,
+                  }}
+                >
+                  {preview ? (
+                    <img src={preview} className="w-full h-full object-cover" alt="foto perfil" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-center p-2">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="mb-1">
+                        <circle cx="12" cy="8" r="4" stroke="#94A3B8" strokeWidth="1.5" />
+                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                      <span className="text-[10px] text-gray-400 leading-tight">Sube tu foto</span>
+                    </div>
+                  )}
+                  {/* Overlay on hover */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 4v16m8-8H4" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => fileRef.current.click()}
+                  className="text-xs font-semibold px-4 py-1.5 rounded-full transition-all"
+                  style={{ color: BLUE_MID, background: "#EBF2FF", border: `1px solid #C0D4F5` }}
+                >
+                  Cambiar foto
+                </button>
+                <span className="text-[10px] text-gray-400 text-center">JPG, PNG · Máx 2MB</span>
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
+              </div>
+
+              {/* ── Form Fields ── */}
+              <div className="flex-1 grid sm:grid-cols-2 gap-x-8 gap-y-6">
+                <FloatingInput label="NOMBRE COMPLETO" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Tu nombre completo" />
+                <FloatingInput label="CORREO ELECTRÓNICO" name="correo" value={form.correo} onChange={handleChange} type="email" placeholder="correo@ejemplo.com" />
+                <FloatingInput label="UNIVERSIDAD" name="universidad" value={form.universidad} onChange={handleChange} placeholder="Nombre de tu universidad" />
+                <FloatingSelect
+                  label="CICLO ACADÉMICO"
+                  name="ciclo"
+                  value={form.ciclo}
                   onChange={handleChange}
-                  className="w-full border rounded-lg pl-10 py-2 text-gray-900 focus:ring-2 focus:ring-blue-900"
+                  options={["6", "7", "8", "9", "10"]}
+                />
+                <div className="relative">
+                  <div className="relative">
+                    <select
+                      value={form.areaId}
+                      onChange={(e) => {
+                        const selected = areas.find(a => a.id === e.target.value);
+                        if (!selected) return;
+
+                        setForm(prev => ({
+                          ...prev,
+                          area: selected.nombre,
+                          areaId: selected.id
+                        }));
+                      }}
+                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 outline-none appearance-none"
+                      style={{ borderColor: "#E2E8F0" }}
+                    >
+                      <option value="">Selecciona área</option>
+                      {areas.map(a => (
+                        <option key={a.id} value={a.id}>
+                          {a.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div className="relative">
+                    <select
+                      value={form.carreraId}
+                      onChange={(e) => {
+                        const selected = carreras.find(c => c.id === e.target.value);
+                        if (!selected) return;
+
+                        setForm(prev => ({
+                          ...prev,
+                          carrera: selected.nombre,
+                          carreraId: selected.id
+                        }));
+                      }}
+                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 outline-none appearance-none"
+                      style={{ borderColor: "#E2E8F0" }}
+                    >
+                      <option value="">Selecciona carrera</option>
+                      {carreras.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <FloatingSelect
+                  label="DISPONIBILIDAD"
+                  name="disponibilidad"
+                  value={form.disponibilidad}
+                  onChange={handleChange}
+                  options={["Full-time", "Part-time"]}
                 />
               </div>
             </div>
-
-            <div>
-              <label className="text-sm text-gray-700 font-medium">
-                Correo
-              </label>
-              <div className="relative mt-1">
-                <Mail className="absolute left-3 top-2.5 text-gray-400" size={18}/>
-                <input
-                  name="correo"
-                  value={form.correo}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg pl-10 py-2 text-gray-900 focus:ring-2 focus:ring-blue-900"
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-3">
-              <input
-                name="area"
-                value={form.area}
-                onChange={handleChange}
-                placeholder="Área"
-                className="border rounded-lg px-3 py-2"
-              />
-
-              <input
-                name="carrera"
-                value={form.carrera}
-                onChange={handleChange}
-                placeholder="Carrera"
-                className="border rounded-lg px-3 py-2"
-              />
-            </div>
-
-            <input
-              name="disponibilidad"
-              value={form.disponibilidad}
-              onChange={handleChange}
-              placeholder="Disponibilidad"
-              className="border rounded-lg px-3 py-2 w-full"
-            />
-
           </div>
         </div>
-      </div>
 
-      {/* PERFIL PROFESIONAL */}
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">
-          Perfil profesional
-        </h3>
+        {/* ── Card 2: Links & CV ── */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-        <div className="space-y-4">
-          {SECCIONES.map(({ id, title, icon: Icon }) => (
-            <div key={id}>
-              <div className="flex items-center gap-2 mb-2 text-gray-800 font-medium">
-                <Icon size={16} />
-                {title}
+          <div className="p-8">
+            <SectionTitle icon="🔗" title="PRESENCIA DIGITAL" subtitle="Perfiles y documentos profesionales" />
+
+            <div className="grid sm:grid-cols-3 gap-6">
+              {/* LinkedIn */}
+              <div className="relative group">
+                <div
+                  className="flex items-center gap-3 border-2 rounded-xl px-4 py-3.5 transition-all duration-200"
+                  style={{ borderColor: "#E2E8F0" }}
+                  onFocus={() => { }}
+                >
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: "#0A66C2" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                      <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+                      <circle cx="4" cy="4" r="2" fill="white" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] font-bold tracking-wider text-gray-400 mb-0.5">LINKEDIN</div>
+                    <input
+                      name="linkedin"
+                      value={form.linkedin}
+                      onChange={handleChange}
+                      placeholder="linkedin.com/in/tu-perfil"
+                      className="w-full text-sm text-gray-700 outline-none bg-transparent placeholder-gray-300 truncate"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {listas[id].map((item, index) => (
-                <div key={index} className="flex gap-2 mb-2">
-                  <input
-                    value={item}
-                    onChange={(e) =>
-                      handleListChange(id, index, e.target.value)
-                    }
-                    className="w-full border rounded-lg px-3 py-2 text-sm"
-                  />
+              {/* GitHub */}
+              <div className="relative group">
+                <div
+                  className="flex items-center gap-3 border-2 rounded-xl px-4 py-3.5 transition-all duration-200"
+                  style={{ borderColor: "#E2E8F0" }}
+                >
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-900">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] font-bold tracking-wider text-gray-400 mb-0.5">GITHUB</div>
+                    <input
+                      name="github"
+                      value={form.github}
+                      onChange={handleChange}
+                      placeholder="github.com/tu-usuario"
+                      className="w-full text-sm text-gray-700 outline-none bg-transparent placeholder-gray-300 truncate"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* CV Upload */}
+              <div
+                onClick={() => cvRef.current.click()}
+                className="flex items-center gap-3 border-2 rounded-xl px-4 py-3.5 cursor-pointer transition-all duration-200 group"
+                style={{
+                  borderColor: cvName ? ORANGE : "#E2E8F0",
+                  background: cvName ? ORANGE_LIGHT : "white",
+                }}
+              >
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
+                  style={{ background: cvName ? ORANGE : "#F1F5F9" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" />
+                    <polyline points="14 2 14 8 20 8" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" />
+                    <line x1="9" y1="13" x2="15" y2="13" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="9" y1="17" x2="13" y2="17" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: cvName ? ORANGE : "#94A3B8" }}>
+                    CURRÍCULUM VITAE
+                  </div>
+                  <div className="text-sm truncate" style={{ color: cvName ? "#92400E" : "#94A3B8" }}>
+                    {cvName || "Subir archivo PDF"}
+                  </div>
+                </div>
+                {!cvName && (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-gray-300">
+                    <path d="M12 4v16m8-8H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                )}
+                {cvName && (
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <input ref={cvRef} type="file" accept=".pdf" className="hidden" onChange={handleCV} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Card 3: Perfil Profesional ── */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+          <div className="p-8">
+            <SectionTitle title="PERFIL PROFESIONAL" subtitle="Presiona Enter para agregar cada elemento" />
+
+            <div className="space-y-8">
+
+  {/* TEXTAREAS FULL WIDTH */}
+  <ListaTag tipo="descripcion" config={listaConfig.descripcion} items={listas.descripcion} setListas={setListas} />
+  <ListaTag tipo="motivaciones" config={listaConfig.motivaciones} items={listas.motivaciones} setListas={setListas} />
+  <ListaTag tipo="experiencia" config={listaConfig.experiencia} items={listas.experiencia} setListas={setListas} />
+  
+
+  {/* TAGS EN MITAD */}
+  <div className="grid sm:grid-cols-2 gap-6">
+    <ListaTag tipo="cursos" config={listaConfig.cursos} items={listas.cursos} setListas={setListas} />
+    <ListaTag tipo="capacitaciones" config={listaConfig.capacitaciones} items={listas.capacitaciones} setListas={setListas} />
+  </div>
+
+</div>
+          </div>
+        </div>
+
+        {/* ── Save Button ── */}
+        <div className="flex items-center justify-between pb-6">
+          <p className="text-xs text-gray-400">
+            Los cambios se guardan en tu perfil de candidato
+          </p>
+          <button
+  onClick={guardar}
+  className="relative flex items-center gap-2.5 px-8 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 active:scale-95 shadow-lg"
+  style={{
+    background: saved
+      ? `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_MID} 100%)`
+      : `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_MID} 100%)`,
+    boxShadow: "0 4px 20px rgba(0,48,135,0.35)",
+  }}
+>
+            {saved ? "¡Perfil actualizado!" : "Actualizar perfil"}
+</button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+/* ─── Lista Tag Component ─── */
+function ListaTag({ tipo, config, items, setListas }) {
+  const [value, setValue] = useState("");
+  const isTextarea = ["experiencia", "motivaciones", "descripcion"].includes(tipo);
+
+  return (
+    <div className="w-full">
+      
+      {/* LABEL */}
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+        {config.label}
+      </label>
+
+      {/* TEXTAREA */}
+      {isTextarea && (
+        <textarea
+          rows={5}
+          value={items}
+          onChange={(e) =>
+            setListas((prev) => ({ ...prev, [tipo]: e.target.value }))
+          }
+          className="w-full text-sm px-4 py-3 rounded-lg border border-gray-300 outline-none focus:border-blue-500"
+          placeholder={config.placeholder}
+        />
+      )}
+
+      {/* TAGS */}
+      {!isTextarea && (
+        <>
+          {/* LISTA DE TAGS */}
+          {items.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {items.map((item) => (
+                <span
+                  key={item}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
+                  style={{
+                    background: ORANGE_LIGHT,
+                    color: "#C2410C",
+                    border: "1px solid #FED7AA",
+                  }}
+                >
+                  {item}
                   <button
-                    onClick={() => eliminarItem(id, index)}
-                    className="text-red-400"
+                    onClick={() =>
+                      setListas((prev) => ({
+                        ...prev,
+                        [tipo]: prev[tipo].filter((i) => i !== item),
+                      }))
+                    }
                   >
                     ✕
                   </button>
-                </div>
+                </span>
               ))}
-
-              <button
-                onClick={() => agregarItem(id)}
-                className="text-sm text-orange-500"
-              >
-                + Agregar
-              </button>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* BOTÓN */}
-      <div className="flex justify-end">
-        <button
-          onClick={guardar}
-          className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600"
-        >
-          Guardar cambios
-        </button>
-      </div>
+          {/* INPUT + BOTÓN */}
+          <div className="flex gap-2">
+            <input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              className="flex-1 text-sm px-4 py-3 rounded-lg border border-gray-300 outline-none focus:border-blue-500"
+              placeholder={config.placeholder}
+            />
 
+            <button
+              onClick={() => {
+                if (!value.trim()) return;
+                setListas((prev) => ({
+                  ...prev,
+                  [tipo]: [...prev[tipo], value],
+                }));
+                setValue("");
+              }}
+              className="px-4 rounded-lg text-white font-bold"
+              style={{ background: ORANGE }}
+            >
+              +
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

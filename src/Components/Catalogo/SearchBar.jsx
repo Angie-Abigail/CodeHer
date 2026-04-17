@@ -1,7 +1,7 @@
 // components/SearchBar.jsx
 import React from "react";
 
-const SearchBar = ({ value, onChange, placeholder = "Buscar por nombre, carrera o habilidad..." }) => {
+const SearchBar = ({ value, onChange, placeholder = "Buscar por palabras claves....."}) => {
   return (
     <div className="relative w-full">
       {/* Icono búsqueda */}

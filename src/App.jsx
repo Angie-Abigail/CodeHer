@@ -7,6 +7,7 @@ import Login from "./Components/Login/Login";
 import Registro from "./Components/Registro/Registro";
 import Perfil from "./Components/DasboardPracticante/Perfil";
 import CatalogoPracticantes from "./Pages/Catalogo/Catalogo";
+import Dashboard from "./Components/DasboardPracticante/Dashboard";
 
 export default function App() {
   const [searchQuery] = useState("");
@@ -22,19 +23,12 @@ export default function App() {
             path="/dashboard"
             element={
               <ProtectedRoute rolRequerido="usuario">
-                <Perfil />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
 
-          <Route
-            path="/catalogo"
-            element={
-              <ProtectedRoute rolRequerido="lider">
-                <CatalogoPracticantes />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/catalogo" element={<CatalogoPracticantes />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />

@@ -7,7 +7,6 @@ import Mensajes from "./Mensajes";
 export default function DashboardContent({ section }) {
   return (
     <div className="p-8">
-
       {section === "perfil" && <Perfil />}
       {section === "verPerfil" && <VerPerfil />}
       {section === "mensajes" && <Mensajes />}

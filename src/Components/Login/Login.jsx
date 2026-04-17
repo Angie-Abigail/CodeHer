@@ -124,24 +124,12 @@ export default function Login({ onClose, irARegistro }) {
           <p className="text-red-500 text-sm mt-3">{error}</p>
         )}
 
-        {/* BUTTON LOGIN */}
+        {/* LOGIN BUTTON */}
         <button
           onClick={handleLogin}
-          className="w-full mt-6 bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition font-medium"
+          className="w-full bg-blue-900 text-white py-2 rounded-lg mt-6 hover:bg-blue-800 transition"
         >
-          Ingresar
-        </button>
-
-        {/* GOOGLE */}
-        <button
-          onClick={handleGoogle}
-          className="w-full mt-4 border border-gray-300 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition text-sm text-gray-700 font-medium"
-        >
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
-            className="w-5"
-          />
-          Iniciar sesión con Google
+          Iniciar sesión
         </button>
 
         {/* REGISTER */}

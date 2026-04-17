@@ -1,60 +1,63 @@
-// components/FilterPanel.jsx
-import React from "react";
+import React, { useState } from "react";
 
-const AREA_ICONS = {
-  "Analítica y Tecnología": "💻",
-  "Finanzas y Control": "📊",
-  "Gestión y Operaciones": "⚙️",
-  "Comunicación y Relación": "📣",
-};
+/* ─── SECTION (COLLAPSIBLE) ─── */
+const FilterSection = ({ title, items, selected, onToggle }) => {
+  const [open, setOpen] = useState(true);
 
-const CARRERA_ICONS = {
-  "Ingeniería de Sistemas": "🖥️",
-  Economía: "📈",
-  Comunicaciones: "📡",
-  Administración: "🏢",
-  "Ingeniería Industrial": "🏭",
-  "Ingeniería de Software": "💾",
-  "Administración y Negocios Internacionales": "🌐",
-};
+  return (
+    <div className="border-b border-gray-100 py-4 last:border-none">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between mb-3"
+      >
+        <h3 className="text-[12px] font-bold tracking-widest text-[#003087] uppercase">
+          {title}
+        </h3>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          className="text-gray-400 transition-transform duration-200 flex-shrink-0"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+        >
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
 
-const FilterSection = ({ title, items, selected, onToggle, icons }) => (
-  <div className="mb-6">
-    <h3 className="text-xs font-bold text-[#003087] uppercase tracking-widest mb-3 flex items-center gap-2">
-      <span className="w-5 h-0.5 bg-[#FF6B00] rounded-full inline-block" />
-      {title}
-    </h3>
-    <div className="space-y-1">
-      {items.map((item) => {
-        const isActive = selected.includes(item);
-        return (
-          <button
-            key={item}
-            onClick={() => onToggle(item)}
-            className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2.5 group ${
-              isActive
-                ? "bg-[#003087] text-white shadow-md shadow-[#003087]/20"
-                : "text-gray-600 hover:bg-[#003087]/8 hover:text-[#003087]"
-            }`}
-          >
-            <span className="text-base leading-none">
-              {icons?.[item] || "•"}
-            </span>
-            <span className="text-xs leading-snug">{item}</span>
-            {isActive && (
-              <span className="ml-auto w-4 h-4 rounded-full bg-[#FF6B00] flex items-center justify-center flex-shrink-0">
-                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </span>
-            )}
-          </button>
-        );
-      })}
+      {open && (
+        <div className="space-y-2">
+          {items.map((item) => {
+            const name = item.nombre || item;
+            const active = selected.includes(name);
+
+            return (
+              <button
+                key={name}
+                onClick={() => onToggle(name)}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-[13px] transition-all border"
+                style={{
+                  background: active ? "#003087" : "white",
+                  color: active ? "white" : "#4B5563",
+                  borderColor: active ? "#003087" : "#E5E7EB",
+                }}
+              >
+                <span className="truncate text-left font-medium">{name}</span>
+                {active && (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
+                    <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
+/* ─── MAIN ─── */
 const FilterPanel = ({
   areas,
   carreras,
@@ -64,95 +67,129 @@ const FilterPanel = ({
   onToggleArea,
   onToggleCarrera,
   onToggleDisponibilidad,
-  onApply,
-  onClear,
+  onClearAll,
   totalResults,
 }) => {
-  const hasFilters =
-    selectedAreas.length > 0 ||
-    selectedCarreras.length > 0 ||
-    selectedDisponibilidad.length > 0;
+  const totalFiltros =
+    selectedAreas.length + selectedCarreras.length + selectedDisponibilidad.length;
 
   return (
-    <aside className="w-72 flex-shrink-0">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#003087] to-[#004db3] px-5 py-4">
+    <aside className="w-60 flex-shrink-0">
+      <div className="sticky top-6 bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+
+        {/* HEADER */}
+        <div className="bg-[#003087] px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-white font-bold text-sm tracking-wide">Filtrar practicantes</h2>
-              <p className="text-blue-200 text-xs mt-0.5">{totalResults} resultados</p>
-            </div>
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+            <div className="flex items-center gap-2.5">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M3 6h18M7 12h10M11 18h2" stroke="white" strokeWidth="2" strokeLinecap="round" />
               </svg>
+              <h2 className="text-white text-[13px] font-bold tracking-wide">Filtros</h2>
             </div>
+
+            {/* Contador de filtros activos */}
+            {totalFiltros > 0 && (
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[11px] font-black px-2 py-0.5 rounded-full"
+                  style={{ background: "#FF6B00", color: "white", minWidth: "22px", textAlign: "center" }}
+                >
+                  {totalFiltros}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-[12px] text-blue-200">
+              {totalResults} resultado{totalResults !== 1 ? "s" : ""}
+            </p>
+
+            {/* Botón limpiar */}
+            {totalFiltros > 0 && (
+              <button
+                onClick={onClearAll}
+                className="text-[11px] font-semibold text-blue-200 hover:text-white transition-colors underline underline-offset-2"
+              >
+                Limpiar todo
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="p-5">
+        {/* FILTROS ACTIVOS (pills resumen) */}
+        {totalFiltros > 0 && (
+          <div className="px-3 pt-3 pb-1 flex flex-wrap gap-1.5">
+            {[...selectedAreas, ...selectedCarreras, ...selectedDisponibilidad].map((f) => (
+              <span
+                key={f}
+                className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full"
+                style={{ background: "#FFF3E8", color: "#C2410C", border: "1px solid #FED7AA" }}
+              >
+                {f}
+                <button
+                  onClick={() => {
+                    if (selectedAreas.includes(f)) onToggleArea(f);
+                    else if (selectedCarreras.includes(f)) onToggleCarrera(f);
+                    else onToggleDisponibilidad(f);
+                  }}
+                  className="hover:text-red-600 transition-colors ml-0.5 font-bold leading-none"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* SECCIONES */}
+        <div className="px-3 pb-2">
           <FilterSection
             title="Áreas"
             items={areas}
             selected={selectedAreas}
             onToggle={onToggleArea}
-            icons={AREA_ICONS}
           />
+
           <FilterSection
             title="Carreras"
             items={carreras}
             selected={selectedCarreras}
             onToggle={onToggleCarrera}
-            icons={CARRERA_ICONS}
           />
 
-          {/* Disponibilidad */}
-          <div className="mb-6">
-            <h3 className="text-xs font-bold text-[#003087] uppercase tracking-widest mb-3 flex items-center gap-2">
-              <span className="w-5 h-0.5 bg-[#FF6B00] rounded-full inline-block" />
+          {/* DISPONIBILIDAD */}
+          <div className="pt-4">
+            <h3 className="text-[12px] font-bold tracking-widest text-[#003087] uppercase mb-3">
               Disponibilidad
             </h3>
-            <div className="flex gap-2">
-              {["Full-time", "Part-time"].map((disp) => {
-                const isActive = selectedDisponibilidad.includes(disp);
+            <div className="space-y-2">
+              {["Full-time", "Part-time"].map((item) => {
+                const active = selectedDisponibilidad.includes(item);
                 return (
                   <button
-                    key={disp}
-                    onClick={() => onToggleDisponibilidad(disp)}
-                    className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
-                      isActive
-                        ? disp === "Full-time"
-                          ? "bg-green-600 text-white border-green-600 shadow-md"
-                          : "bg-amber-500 text-white border-amber-500 shadow-md"
-                        : "bg-gray-50 text-gray-500 border-gray-200 hover:border-[#003087] hover:text-[#003087]"
-                    }`}
+                    key={item}
+                    onClick={() => onToggleDisponibilidad(item)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] border transition-all font-medium"
+                    style={{
+                      background: active ? "#003087" : "white",
+                      color: active ? "white" : "#4B5563",
+                      borderColor: active ? "#003087" : "#E5E7EB",
+                    }}
                   >
-                    {disp}
+                    <span>{item}</span>
+                    {active && (
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
+                        <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
                   </button>
                 );
               })}
             </div>
           </div>
-
-          {/* Botones */}
-          <div className="space-y-2">
-            <button
-              onClick={onApply}
-              className="w-full py-3 bg-gradient-to-r from-[#003087] to-[#0044bb] hover:from-[#002266] hover:to-[#003087] text-white text-sm font-bold rounded-xl transition-all duration-200 shadow-md shadow-[#003087]/20 hover:shadow-lg hover:shadow-[#003087]/30 hover:-translate-y-0.5"
-            >
-              Aplicar filtros
-            </button>
-            {hasFilters && (
-              <button
-                onClick={onClear}
-                className="w-full py-2.5 text-gray-500 text-xs font-medium rounded-xl hover:bg-gray-50 transition-colors border border-gray-200 hover:text-[#003087] hover:border-[#003087]"
-              >
-                Limpiar filtros
-              </button>
-            )}
-          </div>
         </div>
+
       </div>
     </aside>
   );

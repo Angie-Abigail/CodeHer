@@ -1,345 +1,407 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import {
-  Mail, Lock, User, ChevronDown, ChevronUp,
-  Briefcase, BookOpen, Heart, Award, Image as ImageIcon
+  Briefcase, BookOpen, Heart, Award, Image as ImageIcon,
+  X, Loader2, User, Mail, Lock
 } from "lucide-react";
 
-const SECCIONES = [
-  { id: 'experiencia', title: 'Experiencia Laboral', icon: Briefcase },
-  { id: 'cursos', title: 'Cursos', icon: BookOpen },
-  { id: 'voluntariado', title: 'Voluntariado', icon: Heart },
-  { id: 'capacitaciones', title: 'Capacitaciones', icon: Award },
-];
-
+const input =
+  "w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-900";
 export default function Registro({ onClose, irALogin }) {
-  const { register } = useAuth();
+  const navigate = useNavigate();
+  const { register, getAreas, getCarreras } = useAuth();
 
-  const [activeSection, setActiveSection] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const [areas, setAreas] = useState([]);
+  const [carreras, setCarreras] = useState([]);
 
   const [form, setForm] = useState({
-    nombre: "",
-    correo: "",
-    contraseña: "",
-    area: "",
-    carrera: "",
-    disponibilidad: "",
-    foto: null
-  });
-
-  const [listas, setListas] = useState({
-  experiencia: [""],
-  cursos: [""],
-  voluntariado: [""],
-  capacitaciones: [""],
+  nombre: "", correo: "", contraseña: "",
+  area: "", areaId: "",
+  carrera: "", carreraId: "",
+  universidad: "", ciclo: "",
+  descripcion: "", motivaciones: "",
+  linkedin: "", github: "",
+  cv: null,
+  foto: null
 });
 
-const handleListChange = (tipo, index, value) => {
-  const nuevas = [...listas[tipo]];
-  nuevas[index] = value;
-
-  setListas({ ...listas, [tipo]: nuevas });
-};
-
-const agregarItem = (tipo) => {
-  setListas({
-    ...listas,
-    [tipo]: [...listas[tipo], ""]
+  const [listas, setListas] = useState({
+    experiencia: "",
+    cursos: [],
+    capacitaciones: []
   });
-};
 
-const eliminarItem = (tipo, index) => {
-  const nuevas = listas[tipo].filter((_, i) => i !== index);
+  // 🔒 Bloquear scroll
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
 
-  setListas({
-    ...listas,
-    [tipo]: nuevas.length ? nuevas : [""]
-  });
-};
+    const cargarDatos = async () => {
+      const areasData = await getAreas();
+      const carrerasData = await getCarreras();
 
+      setAreas(areasData);
+      setCarreras(carrerasData);
+    };
+
+    cargarDatos();
+
+    return () => (document.body.style.overflow = "auto");
+  }, [getAreas, getCarreras]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // 📸 MANEJO DE IMAGEN
   const handleImage = (e) => {
     const file = e.target.files[0];
-
-    if (!file) return;
-
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      alert("Solo se permiten imágenes JPG o PNG");
-      return;
+    if (file) {
+      setForm({ ...form, foto: file });
+      setPreview(URL.createObjectURL(file));
     }
-
-    setForm({ ...form, foto: file });
-    setPreview(URL.createObjectURL(file));
   };
 
-  const areas = [
-    "Analítica y Tecnología",
-    "Finanzas y Control",
-    "Gestión y Operaciones",
-    "Comunicación y Relación"
-  ];
+  const handleCV = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setForm({ ...form, cv: file });
+  }
+};
 
-  const carreras = [
-    "Ingeniería de Sistemas",
-    "Economía",
-    "Comunicaciones",
-    "Administración",
-    "Ingeniería Industrial",
-    "Ingeniería de Software",
-    "Administración y Negocios Internacionales"
-  ];
+  const ejecutarRegistro = async () => {
+  if (!form.nombre || !form.correo || !form.contraseña) {
+    alert("Completa los datos personales");
+    return;
+  }
 
-  const disponibilidad = ["Full-time", "Part-time"];
-  
+  if (!form.area || !form.carrera) {
+    alert("Completa tu información académica");
+    return;
+  }
 
+  setLoading(true);
+
+  await register({ ...form, ...listas });
+
+  // 👇 SI ES MODAL → cerrar
+  if (onClose) {
+    onClose();
+  }
+
+  // 👇 redirección opcional
+  navigate("/dashboard");
+};
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+  <div
+    className="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+    onClick={onClose}
+  >
+    <div
+      className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl flex flex-col h-[90vh] overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
 
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+      {/* HEADER */}
+      <div className="relative p-6 text-center border-b border-blue-100">
+        <button
+          onClick={irALogin}
+          className="absolute left-4 top-4 text-blue-900 font-bold"
+        >
+          ← Regresar
+        </button>
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={irALogin}
-            className="text-sm text-blue-900 hover:underline"
-          >
-            ← Regresar
-          </button>
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-blue-900"
+        >
+          <X />
+        </button>
 
-          <h2 className="text-lg font-bold text-blue-900">BCP</h2>
+        <h2 className="text-xl font-bold text-blue-900">
+          Registro de Talento BCP
+        </h2>
+        <p className="text-sm text-gray-500">
+          Completa tu perfil profesional
+        </p>
+      </div>
 
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        </div>
+      {/* CONTENIDO */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-10">
 
-        {/* ===== DATOS PERSONALES ===== */}
-        <div className="mb-6">
-          <h3 className="text-gray-900 font-semibold mb-3">
-            Datos personales
-          </h3>
-
-          <div className="grid md:grid-cols-2 gap-4">
-
-            {/* FOTO */}
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-4">
-              
+        {/* DATOS PERSONALES */}
+        <div className="grid md:grid-cols-2 gap-8 pb-6 border-b border-blue-100">
+          
+          {/* FOTO */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative w-28 h-28 rounded-2xl bg-white border border-blue-200 flex items-center justify-center overflow-hidden">
               {preview ? (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className="w-24 h-24 rounded-full object-cover mb-2"
-                />
+                <img src={preview} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-2">
-                  <ImageIcon size={30} />
-                </div>
+                <ImageIcon className="text-blue-300" size={40} />
               )}
+              <input type="file" onChange={handleImage} className="absolute inset-0 opacity-0 cursor-pointer" />
+            </div>
+            <p className="text-xs text-gray-600">Foto de perfil</p>
+          </div>
 
-              <input
-                type="file"
-                accept="image/png, image/jpeg"
-                onChange={handleImage}
-                className="text-xs text-gray-600"
-              />
+          {/* INPUTS */}
+          <div className="space-y-4">
+            <div className="relative">
+              <User className="absolute left-3 top-3 text-gray-400" size={18} />
+              <input name="nombre" placeholder="Nombre completo" className={`${input} pl-10`} onChange={handleChange} />
             </div>
 
-            {/* INPUTS */}
-            <div className="space-y-3">
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
+              <input name="correo" placeholder="Correo electrónico" className={`${input} pl-10`} onChange={handleChange} />
+            </div>
 
-              {/* NOMBRE */}
-              <div>
-                <label className="text-sm text-gray-700 font-medium">
-                  Nombre completo
-                </label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                  <input
-                    name="nombre"
-                    placeholder="Juan Pérez"
-                    className="w-full border border-gray-300 rounded-lg pl-10 py-2 text-gray-900
-                               focus:outline-none focus:ring-2 focus:ring-blue-900"
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* CORREO */}
-              <div>
-                <label className="text-sm text-gray-700 font-medium">
-                  Correo electrónico
-                </label>
-                <div className="relative mt-1">
-                  <Mail className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                  <input
-                    name="correo"
-                    placeholder="ejemplo@correo.com"
-                    className="w-full border border-gray-300 rounded-lg pl-10 py-2 text-gray-900
-                               focus:outline-none focus:ring-2 focus:ring-blue-900"
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* PASSWORD */}
-              <div>
-                <label className="text-sm text-gray-700 font-medium">
-                  Contraseña
-                </label>
-                <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                  <input
-                    type="password"
-                    name="contraseña"
-                    placeholder="••••••••"
-                    className="w-full border border-gray-300 rounded-lg pl-10 py-2 text-gray-900
-                               focus:outline-none focus:ring-2 focus:ring-blue-900"
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
+              <input type="password" name="contraseña" placeholder="Contraseña" className={`${input} pl-10`} onChange={handleChange} />
             </div>
           </div>
         </div>
 
-        {/* ===== INFORMACIÓN ADICIONAL ===== */}
-        <div className="mb-6">
-          <h3 className="text-gray-900 font-semibold mb-3">
-            Información adicional
-          </h3>
+        {/* ACADÉMICO */}
+        <div className="pb-6 border-b border-blue-100 space-y-5">
+          <h3 className="font-bold text-blue-900">Información académica</h3>
 
-          <div className="grid md:grid-cols-3 gap-3">
+          <div className="grid md:grid-cols-2 gap-5">
+            <input name="universidad" placeholder="Universidad" className={input} onChange={handleChange} />
 
-            <select
-              name="disponibilidad"
-              onChange={handleChange}
-              className="border border-gray-300 py-2 px-3 rounded-lg text-gray-900
-                         focus:outline-none focus:ring-2 focus:ring-blue-900"
-            >
-              <option value="">Disponibilidad</option>
-              {disponibilidad.map(d => <option key={d}>{d}</option>)}
+            <select name="ciclo" className={input} onChange={handleChange}>
+              <option value="">Ciclo</option>
+              {[6, 7, 8, 9, 10].map((ciclo) => (
+  <option key={ciclo}>{ciclo}° Ciclo</option>
+))}
             </select>
 
             <select
               name="area"
-              onChange={handleChange}
-              className="border border-gray-300 py-2 px-3 rounded-lg text-gray-900
-                         focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className={input}
+              onChange={(e) => {
+                const selected = areas.find(a => a.id === e.target.value);
+                if (!selected) return;
+                setForm(prev => ({
+                  ...prev,
+                  area: selected.nombre,
+                  areaId: selected.id
+                }));
+              }}
             >
               <option value="">Área</option>
-              {areas.map(a => <option key={a}>{a}</option>)}
+              {areas.map((a) => (
+                <option key={a.id} value={a.id}>{a.nombre}</option>
+              ))}
             </select>
 
             <select
               name="carrera"
-              onChange={handleChange}
-              className="border border-gray-300 py-2 px-3 rounded-lg text-gray-900
-                         focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className={input}
+              onChange={(e) => {
+                const selected = carreras.find(c => c.id === e.target.value);
+                if (!selected) return;
+                setForm(prev => ({
+                  ...prev,
+                  carrera: selected.nombre,
+                  carreraId: selected.id
+                }));
+              }}
             >
               <option value="">Carrera</option>
-              {carreras.map(c => <option key={c}>{c}</option>)}
+              {carreras.map((c) => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
+              ))}
             </select>
-
           </div>
         </div>
 
-        {/* ===== PERFIL PROFESIONAL ===== */}
-        <div className="mb-6">
-          <h3 className="text-gray-900 font-semibold mb-3">
-            Perfil profesional
-          </h3>
+        {/* SOBRE TI */}
+        <div className="pb-6 border-b border-blue-100 space-y-4">
+          <h3 className="font-bold text-blue-900">Sobre ti</h3>
 
-          <div className="space-y-2">
-            {SECCIONES.map(({ id, title, icon: Icon }) => (
-              <div key={id} className="border rounded-lg overflow-hidden">
+          <textarea
+            name="descripcion"
+            placeholder="Cuéntanos quién eres..."
+            className={`${input} h-20`}
+            onChange={handleChange}
+          />
 
-                <button
-                  onClick={() =>
-                    setActiveSection(activeSection === id ? null : id)
-                  }
-                  className="w-full flex justify-between items-center px-4 py-2 bg-gray-50 hover:bg-gray-100"
-                >
-                  <span className="flex items-center gap-2 text-gray-800 font-medium">
-                    <Icon size={16} />
-                    {title}
-                  </span>
+          <textarea
+            name="motivaciones"
+            placeholder="¿Qué te motiva?"
+            className={`${input} h-20`}
+            onChange={handleChange}
+          />
+        </div>
 
-                  {activeSection === id
-                    ? <ChevronUp size={18} />
-                    : <ChevronDown size={18} />}
-                </button>
+        {/* PERFIL PROFESIONAL */}
+        <div className="space-y-6 pb-6 border-b border-blue-100">
+          <h3 className="font-bold text-blue-900">Perfil profesional</h3>
 
-                {activeSection === id && (
-                  <div className="p-3 border-t">
-                    <div className="space-y-2">
+          <div>
+            <label className="text-sm font-semibold text-gray-700">
+              Experiencia laboral
+            </label>
+            <textarea
+              value={listas.experiencia}
+              onChange={(e) =>
+                setListas({ ...listas, experiencia: e.target.value })
+              }
+              className={`${input} h-24 mt-2`}
+            />
+          </div>
 
-  {listas[id].map((item, index) => (
-    <div key={index} className="flex gap-2">
+          <div className="grid md:grid-cols-2 gap-6">
+            <TagInput label="Cursos y certificaciones" tipo="cursos" listas={listas} setListas={setListas} />
+            <TagInput label="Capacitaciones" tipo="capacitaciones" listas={listas} setListas={setListas} />
+          </div>
+        </div>
+
+        {/* LINKS + CV */}
+        <div className="grid md:grid-cols-2 gap-5">
+          <input name="linkedin" placeholder="Link de LinkedIn" className={input} onChange={handleChange} />
+          <input name="github" placeholder="Link de GitHub" className={input} onChange={handleChange} />
+
+          <div className="md:col-span-2 space-y-2">
+  <label className="text-sm font-medium text-gray-700">
+    Subir CV (PDF)
+  </label>
+
+  {!form.cv ? (
+    <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-900 transition">
+      <span className="text-sm text-gray-500">
+        Haz clic para subir tu CV
+      </span>
+      <span className="text-xs text-gray-400 mt-1">
+        Solo archivos PDF
+      </span>
 
       <input
-        value={item}
-        onChange={(e) =>
-          handleListChange(id, index, e.target.value)
-        }
-        placeholder={`Ej: ${title}`}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                   text-gray-900 placeholder-gray-400
-                   focus:outline-none focus:ring-2 focus:ring-blue-900"
+        type="file"
+        accept=".pdf"
+        onChange={handleCV}
+        className="hidden"
       />
-
-      {/* ELIMINAR */}
-      <button
-        onClick={() => eliminarItem(id, index)}
-        className="text-red-400 hover:text-red-600"
-      >
-        ✕
-      </button>
-
-    </div>
-  ))}
-
-  {/* AGREGAR */}
-  <button
-    onClick={() => agregarItem(id)}
-    className="text-sm text-orange-500 hover:underline"
-  >
-    + Agregar
-  </button>
-
-</div>
-                  </div>
-                )}
-
-              </div>
-            ))}
-          </div>
+    </label>
+  ) : (
+    <div className="flex items-center justify-between border border-gray-300 rounded-xl px-4 py-3 bg-gray-50">
+      
+      {/* INFO ARCHIVO */}
+      <div className="flex items-center gap-3">
+        <div className="bg-blue-100 text-blue-900 px-2 py-1 rounded-md text-xs font-bold">
+          PDF
         </div>
 
-        {/* BOTÓN */}
-        <button 
-        className="w-full mt-4 bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition font-medium"
-  onClick={() =>
-    register({
-      ...form,
-      experiencia: listas.experiencia.filter(Boolean),
-      cursos: listas.cursos.filter(Boolean),
-      voluntariado: listas.voluntariado.filter(Boolean),
-      capacitaciones: listas.capacitaciones.filter(Boolean),
-    })
-  }
+        <p className="text-sm text-gray-700 truncate max-w-[200px]">
+          {form.cv.name}
+        </p>
+      </div>
+
+      {/* ACCIONES */}
+      <div className="flex items-center gap-2">
+
+        {/* CAMBIAR */}
+        <label className="text-blue-900 text-sm cursor-pointer hover:underline">
+          Cambiar
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={handleCV}
+            className="hidden"
+          />
+        </label>
+
+        {/* ELIMINAR */}
+        <button
+          onClick={() => setForm({ ...form, cv: null })}
+          className="text-red-500 text-sm hover:underline"
         >
-          Crear cuenta
+          Eliminar
         </button>
 
+      </div>
+    </div>
+  )}
+</div>
+        </div>
+
+      </div>
+
+      {/* FOOTER */}
+      <div className="p-6 border-t border-blue-100 flex justify-center">
+        <button
+          onClick={ejecutarRegistro}
+          className="bg-orange-500 text-white px-12 py-3 rounded-xl font-bold hover:bg-orange-600"
+        >
+          CREAR MI CUENTA
+        </button>
+      </div>
+
+    </div>
+  </div>
+);
+
+}
+
+function TagInput({ label, tipo, listas, setListas }) {
+  const [value, setValue] = useState("");
+
+  return (
+    <div>
+      <label className="text-sm font-semibold text-gray-700">
+        {label}
+      </label>
+
+      {/* TAGS */}
+      {listas[tipo].length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2 mb-2">
+          {listas[tipo].map((item) => (
+            <span
+              key={item}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-orange-100 text-orange-700 border border-orange-200"
+            >
+              {item}
+              <button
+                onClick={() =>
+                  setListas({
+                    ...listas,
+                    [tipo]: listas[tipo].filter((i) => i !== item),
+                  })
+                }
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* INPUT + BOTÓN */}
+      <div className="flex gap-2 mt-2">
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Escribe y agrega"
+          className={input}
+        />
+
+        <button
+          onClick={() => {
+            if (!value.trim()) return;
+            setListas({
+              ...listas,
+              [tipo]: [...listas[tipo], value],
+            });
+            setValue("");
+          }}
+          className="bg-orange-500 text-white px-4 rounded-lg font-bold"
+        >
+          +
+        </button>
       </div>
     </div>
   );
