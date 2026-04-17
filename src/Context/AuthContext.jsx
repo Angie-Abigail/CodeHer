@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
 
   const auth = getAuth();
 
-  // 🔥 FUNCIÓN CENTRAL: traer usuario desde Firestore
+  // 🔥 TRAER USUARIO DESDE FIRESTORE
   const fetchUserFromDB = async (email) => {
     const q = query(
       collection(db, "usuariosbcp"),
@@ -49,90 +49,53 @@ export function AuthProvider({ children }) {
     };
   };
 
-  const getAreas = async () => {
-  try {
-    const snapshot = await getDocs(collection(db, "areas"));
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      nombre: doc.data().nombre
-    }));
-  } catch (error) {
-    console.error("Error cargando áreas:", error);
-    return [];
-  }
-};
-
-const getCarreras = async () => {
-  try {
-    const snapshot = await getDocs(collection(db, "carreras"));
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      nombre: doc.data().nombre
-    }));
-  } catch (error) {
-    console.error("Error cargando carreras:", error);
-    return [];
-  }
-};
-
-
-const getDisponibilidad = async () => {
-  try {
-    const snapshot = await getDocs(collection(db, "disponibilidad"));
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      nombre: doc.data().nombre
-    }));
-  } catch (error) {
-    console.error("Error cargando disponibilidad:", error);
-    return [];
-  }
-};
-
-
-
-  // 🔁 SESIÓN FIREBASE
+  // 🔁 SESIÓN PERSISTENTE (FIX PRINCIPAL)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (!firebaseUser) {
-        setUser(null);
+      try {
+        setLoading(true);
+
+        if (!firebaseUser) {
+          setUser(null);
+          return;
+        }
+
+        const dbUser = await fetchUserFromDB(firebaseUser.email);
+
+        // ✅ SI EXISTE EN FIRESTORE
+        if (dbUser) {
+          setUser(dbUser);
+        } 
+        // ✅ FALLBACK SI NO EXISTE O FALLA FIRESTORE
+        else {
+          setUser({
+            id: firebaseUser.uid,
+            nombre: firebaseUser.displayName,
+            correo: firebaseUser.email,
+            foto: firebaseUser.photoURL,
+            rol: "usuario"
+          });
+        }
+
+      } catch (error) {
+        console.error("Error cargando usuario:", error);
+
+        // 🔥 FALLBACK DE EMERGENCIA
+        if (firebaseUser) {
+          setUser({
+            id: firebaseUser.uid,
+            nombre: firebaseUser.displayName,
+            correo: firebaseUser.email,
+            foto: firebaseUser.photoURL,
+            rol: "usuario"
+          });
+        } else {
+          setUser(null);
+        }
+
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const dbUser = await fetchUserFromDB(firebaseUser.email);
-
-      if (dbUser) {
-        setUser(dbUser);
-      } else {
-        // 🔥 si no existe en Firestore, lo creamos
-        const newUserRef = await addDoc(collection(db, "usuariosbcp"), {
-          nombre: firebaseUser.displayName,
-          correo: firebaseUser.email,
-          foto: firebaseUser.photoURL,
-          rol: "usuario",
-          experiencia: [],
-          cursos: [],
-          voluntariado: [],
-          capacitaciones: [],
-          programas: [],
-          motivaciones: [],
-          descripcion: []
-        });
-
-        setUser({
-          id: newUserRef.id,
-          nombre: firebaseUser.displayName,
-          correo: firebaseUser.email,
-          foto: firebaseUser.photoURL,
-          rol: "usuario"
-        });
-      }
-
-      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -175,31 +138,31 @@ const getDisponibilidad = async () => {
     }
 
     if (data.cv) {
-  const storage = getStorage();
-  const storageRef = ref(storage, `cv/${Date.now()}_${data.cv.name}`);
+      const storage = getStorage();
+      const storageRef = ref(storage, `cv/${Date.now()}_${data.cv.name}`);
 
-  await uploadBytes(storageRef, data.cv);
-  cvURL = await getDownloadURL(storageRef);
-}
+      await uploadBytes(storageRef, data.cv);
+      cvURL = await getDownloadURL(storageRef);
+    }
 
     const nuevoUsuario = {
-  ...data,
-  foto: fotoURL,
-  rol: "usuario",
-  experiencia: data.experiencia || [],
-  cursos: data.cursos || [],
-  capacitaciones: data.capacitaciones || [],
-  fechaRegistro: new Date(),
-  universidad: data.universidad || "",
-  ciclo: data.ciclo || "",
-  descripcion: data.descripcion || "",
-  motivaciones: data.motivaciones || [],
-  areaId: data.areaId,
-  carreraId: data.carreraId,
-  cv: cvURL,
-linkedin: data.linkedin || "",
-github: data.github || "",
-};
+      ...data,
+      foto: fotoURL,
+      cv: cvURL,
+      rol: "usuario",
+      experiencia: data.experiencia || [],
+      cursos: data.cursos || [],
+      capacitaciones: data.capacitaciones || [],
+      fechaRegistro: new Date(),
+      universidad: data.universidad || "",
+      ciclo: data.ciclo || "",
+      descripcion: data.descripcion || "",
+      motivaciones: data.motivaciones || [],
+      areaId: data.areaId,
+      carreraId: data.carreraId,
+      linkedin: data.linkedin || "",
+      github: data.github || ""
+    };
 
     const docRef = await addDoc(collection(db, "usuariosbcp"), nuevoUsuario);
 
@@ -211,42 +174,40 @@ github: data.github || "",
 
   // ✏️ UPDATE
   const updateUser = async (id, newData) => {
-  if (!id) return;
+    if (!id) return;
 
-  const refDoc = doc(db, "usuariosbcp", id);
+    const refDoc = doc(db, "usuariosbcp", id);
 
-  let fotoURL = newData.foto;
-  let cvURL = newData.cv;
+    let fotoURL = newData.foto;
+    let cvURL = newData.cv;
 
-  const storage = getStorage();
+    const storage = getStorage();
 
-  // 🔥 Subir nueva foto si es File
-  if (newData.foto instanceof File) {
-    const storageRef = ref(storage, `usuarios/${Date.now()}_${newData.foto.name}`);
-    await uploadBytes(storageRef, newData.foto);
-    fotoURL = await getDownloadURL(storageRef);
-  }
+    if (newData.foto instanceof File) {
+      const storageRef = ref(storage, `usuarios/${Date.now()}_${newData.foto.name}`);
+      await uploadBytes(storageRef, newData.foto);
+      fotoURL = await getDownloadURL(storageRef);
+    }
 
-  // 🔥 Subir nuevo CV si es File
-  if (newData.cv instanceof File) {
-    const storageRef = ref(storage, `cv/${Date.now()}_${newData.cv.name}`);
-    await uploadBytes(storageRef, newData.cv);
-    cvURL = await getDownloadURL(storageRef);
-  }
+    if (newData.cv instanceof File) {
+      const storageRef = ref(storage, `cv/${Date.now()}_${newData.cv.name}`);
+      await uploadBytes(storageRef, newData.cv);
+      cvURL = await getDownloadURL(storageRef);
+    }
 
-  const dataToSave = {
-    ...newData,
-    foto: fotoURL || "",
-    cv: cvURL || "",
+    const dataToSave = {
+      ...newData,
+      foto: fotoURL || "",
+      cv: cvURL || ""
+    };
+
+    await updateDoc(refDoc, dataToSave);
+
+    setUser((prev) => ({
+      ...prev,
+      ...dataToSave
+    }));
   };
-
-  await updateDoc(refDoc, dataToSave);
-
-  setUser((prev) => ({
-    ...prev,
-    ...dataToSave
-  }));
-};
 
   // 🔵 GOOGLE LOGIN
   const loginGoogle = async () => {
@@ -267,9 +228,7 @@ github: data.github || "",
         rol: "usuario",
         experiencia: [],
         cursos: [],
-        voluntariado: [],
         capacitaciones: [],
-        programas: [],
         motivaciones: [],
         descripcion: []
       });
@@ -293,17 +252,16 @@ github: data.github || "",
   return (
     <AuthContext.Provider
       value={{
-    user,
-    loading,
-    login,
-    register,
-    updateUser,
-    loginGoogle,
-    logout,
-    getAreas,
-    getCarreras,
-    getDisponibilidad
-  }}>
+        user,
+        loading,
+        login,
+        register,
+        updateUser,
+        loginGoogle,
+        logout,
+        fetchUserFromDB
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

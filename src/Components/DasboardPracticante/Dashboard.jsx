@@ -1,22 +1,69 @@
 import { useState } from "react";
 import DashboardContent from "./DashboardContent";
-import DashboardNav from "./DashboardNav.jsx"
+import DashboardNav from "./DashboardNav.jsx";
 import Navbar from "../Navbar/Navbar";
+import { Menu, X } from "lucide-react";
 
 export default function Dashboard() {
   const [section, setSection] = useState("perfil");
+  const [open, setOpen] = useState(false);
+
+  const closeMenu = () => setOpen(false);
 
   return (
     <>
-      <Navbar/>
-      {/* CONTENIDO */}
-      <div className="flex pt-16 min-h-screen bg-gray-100">
+      <Navbar />
 
-        {/* SIDEBAR */}
-        <DashboardNav section={section} setSection={setSection} />
+      <div className="flex min-h-screen bg-gray-100 pt-16">
 
-        {/* CONTENIDO */}
-        <div className="flex-1">
+        {/* SIDEBAR DESKTOP */}
+        <div className="hidden md:block">
+          <DashboardNav section={section} setSection={setSection} />
+        </div>
+
+        {/* MOBILE MENU BUTTON */}
+        <button
+          onClick={() => setOpen(true)}
+          className="md:hidden fixed top-20 left-4 z-50 bg-blue-950 text-white p-2 rounded-lg shadow"
+        >
+          <Menu size={20} />
+        </button>
+
+        {/* MOBILE OVERLAY */}
+        {open && (
+          <div className="fixed inset-0 z-50 flex">
+
+            {/* BACKDROP */}
+            <div
+              className="absolute inset-0 bg-black/40"
+              onClick={closeMenu}
+            />
+
+            {/* SIDEBAR MOBILE */}
+            <div className="relative w-64 bg-white h-full shadow-lg z-50">
+              <div className="flex justify-between items-center p-4 border-b">
+                <span className="font-semibold text-blue-950">
+                  Menú
+                </span>
+
+                <button onClick={closeMenu}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              <DashboardNav
+                section={section}
+                setSection={(s) => {
+                  setSection(s);
+                  closeMenu();
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* CONTENT */}
+        <div className="flex-1 w-full">
           <DashboardContent section={section} />
         </div>
 

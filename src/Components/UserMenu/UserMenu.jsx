@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, ChevronDown } from "lucide-react";
+import { User, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 
@@ -28,44 +28,48 @@ export default function UserMenu({ user }) {
     navigate("/");
   };
 
+  const handleGoDashboard = () => {
+    setOpen(false);
+
+    if (user?.rol?.toLowerCase() === "lider") {
+      navigate("/dashboard-lider");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <div className="relative" ref={ref}>
 
       {/* TRIGGER */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 px-4 py-2 transition group"
+        className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg hover:bg-white/5 transition"
       >
         {/* FOTO */}
         {user?.foto ? (
           <img
             src={user.foto}
-            className="w-9 h-9 object-cover"
-            style={{ borderRadius: "8px" }}
+            className="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-lg"
           />
         ) : (
           <div
-            className="w-9 h-9 flex items-center justify-center"
-            style={{
-              background: "white",
-              borderRadius: "8px",
-            }}
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg bg-white"
           >
-            <User size={18} style={{ color: B }} />
+            <User size={16} style={{ color: B }} />
           </div>
         )}
 
-        {/* INFO */}
-        <div className="text-left leading-tight">
-          <p className="text-white text-sm font-semibold">
+        {/* INFO (ocultar en mobile muy pequeño) */}
+        <div className="hidden sm:block text-left leading-tight">
+          <p className="text-white text-xs sm:text-sm font-semibold">
             {user?.nombre?.split(" ")[0]}
           </p>
-          <p className="text-[11px] text-white/70">
-            Practicante
+          <p className="text-[10px] sm:text-[11px] text-white/70">
+            {user?.rol === "lider" ? "Líder" : "Practicante"}
           </p>
         </div>
 
-        {/* ICON */}
         <ChevronDown
           size={16}
           className={`text-white/70 transition-transform duration-200 ${
@@ -76,16 +80,20 @@ export default function UserMenu({ user }) {
 
       {/* DROPDOWN */}
       <div
-        className={`absolute right-0 mt-3 w-56 bg-white shadow-lg border border-gray-100 
+        className={`absolute right-0 mt-3 w-52 sm:w-56 md:w-60
+        bg-white shadow-lg border border-gray-100
         transition-all duration-200 origin-top-right
-        ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
-        `}
-        style={{ borderRadius: "10px" }}
+        rounded-lg overflow-hidden
+        ${
+          open
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-95 pointer-events-none"
+        }`}
       >
 
         {/* HEADER */}
         <div className="px-4 py-3 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-800">
+          <p className="text-sm font-semibold text-gray-800 truncate">
             {user?.nombre}
           </p>
           <p className="text-xs text-gray-400 truncate">
@@ -97,32 +105,23 @@ export default function UserMenu({ user }) {
         <div className="py-1">
 
           <button
-            onClick={() => {
-              setOpen(false);
-              navigate("/dashboard");
-            }}
-            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 
-            hover:bg-gray-50 transition"
+            onClick={handleGoDashboard}
+            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
           >
-            Mi perfil
+            Mi panel
           </button>
 
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2.5 text-sm text-red-500 
-            hover:bg-red-50 transition"
+            className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
           >
             Cerrar sesión
           </button>
 
         </div>
 
-        {/* ACCENT LINE */}
-        <div
-          className="h-[2px]"
-          style={{ background: O }}
-        />
-
+        {/* ACCENT */}
+        <div className="h-[2px]" style={{ background: O }} />
       </div>
     </div>
   );

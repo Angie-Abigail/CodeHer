@@ -19,9 +19,9 @@ const AREA_ICONS = {
   ),
 };
 
-const AreaTabs = ({ areas = [], selectedArea, onSelectArea }) => {
+const AreaTabs = ({ areas = [], selectedArea, onSelectArea, className = "" }) => {
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className={`flex items-center gap-2 flex-wrap ${className}`}>
 
       {/* ALL */}
       <button

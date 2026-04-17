@@ -85,19 +85,7 @@ const FilterPanel = ({
                 <path d="M3 6h18M7 12h10M11 18h2" stroke="white" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <h2 className="text-white text-[13px] font-bold tracking-wide">Filtros</h2>
-            </div>
-
-            {/* Contador de filtros activos */}
-            {totalFiltros > 0 && (
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-[11px] font-black px-2 py-0.5 rounded-full"
-                  style={{ background: "#FF6B00", color: "white", minWidth: "22px", textAlign: "center" }}
-                >
-                  {totalFiltros}
-                </span>
-              </div>
-            )}
+            </div>   
           </div>
 
           <div className="flex items-center justify-between mt-2">
@@ -117,31 +105,7 @@ const FilterPanel = ({
           </div>
         </div>
 
-        {/* FILTROS ACTIVOS (pills resumen) */}
-        {totalFiltros > 0 && (
-          <div className="px-3 pt-3 pb-1 flex flex-wrap gap-1.5">
-            {[...selectedAreas, ...selectedCarreras, ...selectedDisponibilidad].map((f) => (
-              <span
-                key={f}
-                className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full"
-                style={{ background: "#FFF3E8", color: "#C2410C", border: "1px solid #FED7AA" }}
-              >
-                {f}
-                <button
-                  onClick={() => {
-                    if (selectedAreas.includes(f)) onToggleArea(f);
-                    else if (selectedCarreras.includes(f)) onToggleCarrera(f);
-                    else onToggleDisponibilidad(f);
-                  }}
-                  className="hover:text-red-600 transition-colors ml-0.5 font-bold leading-none"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-
+        
         {/* SECCIONES */}
         <div className="px-3 pb-2">
           <FilterSection

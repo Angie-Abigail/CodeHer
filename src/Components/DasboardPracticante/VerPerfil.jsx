@@ -45,7 +45,8 @@ function Field({ label, value }) {
   );
 }
 
-export default function VerPerfil({user}) {
+export default function VerPerfil() {
+  const { user } = useAuth();
 
   const listas = {
   experiencia: user?.experiencia || "",

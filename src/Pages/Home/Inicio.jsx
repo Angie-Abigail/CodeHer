@@ -2,7 +2,6 @@ import { useState } from "react";
 import Navbar from "../../Components/Navbar/Navbar.jsx";
 import Footer from "../../Components/Footer/Footer.jsx";
 
-const B = "#003087";
 const O = "#F47920";
 
 export default function Inicio() {
@@ -26,56 +25,56 @@ export default function Inicio() {
 
       <Navbar />
 
-      {/* HERO FULL WIDTH */}
-      <div className="pt-28 px-6 md:px-16 lg:px-24 max-w-none">
+      {/* HERO */}
+      <div className="pt-24 sm:pt-28 lg:pt-32 px-4 sm:px-6 md:px-16 lg:px-24">
 
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
 
           {/* LEFT */}
           <div>
 
             <span
-              className="text-xs font-semibold px-4 py-1 rounded-full border"
+              className="text-[11px] sm:text-xs font-semibold px-3 sm:px-4 py-1 rounded-full border"
               style={{ borderColor: O, color: O }}
             >
               PROGRAMA DE PRÁCTICAS BCP
             </span>
 
-            <h1 className="text-5xl md:text-6xl font-extrabold mt-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mt-5 sm:mt-6 leading-tight">
               Impulsa tu futuro en el{" "}
               <span style={{ color: O }}>BCP</span>
             </h1>
 
-            <p className="text-gray-300 mt-6 max-w-xl text-base leading-relaxed">
+            <p className="text-gray-300 mt-5 sm:mt-6 max-w-xl text-sm sm:text-base leading-relaxed">
               Forma parte del Banco de Crédito del Perú, la institución financiera más importante del país.
               Aprende con equipos de alto rendimiento, proyectos reales y tecnología de clase mundial.
             </p>
 
             {/* CTA */}
-            <div className="flex gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8">
               <button
-                className="px-6 py-3 rounded-xl font-semibold transition hover:scale-105"
+                className="px-5 sm:px-6 py-3 rounded-xl font-semibold transition hover:scale-105 w-full sm:w-auto"
                 style={{ background: O }}
               >
                 Postular ahora
               </button>
 
-              <button className="px-6 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition">
+              <button className="px-5 sm:px-6 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition w-full sm:w-auto">
                 Conocer más
               </button>
             </div>
 
             {/* STATS */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-8 sm:mt-10">
               {stats.map((s, i) => (
                 <div
                   key={i}
-                  className="bg-white/5 hover:bg-white/10 transition p-4 rounded-xl border border-white/10"
+                  className="bg-white/5 hover:bg-white/10 transition p-3 sm:p-4 rounded-xl border border-white/10"
                 >
-                  <p className="text-xl font-bold" style={{ color: O }}>
+                  <p className="text-lg sm:text-xl font-bold" style={{ color: O }}>
                     {s.value}
                   </p>
-                  <p className="text-xs text-gray-300 mt-1">
+                  <p className="text-[11px] sm:text-xs text-gray-300 mt-1">
                     {s.label}
                   </p>
                 </div>
@@ -84,24 +83,24 @@ export default function Inicio() {
 
           </div>
 
-          {/* RIGHT VISUAL SYSTEM */}
-          <div className="relative">
+          {/* RIGHT */}
+          <div className="relative mt-6 lg:mt-0">
 
             {/* MAIN IMAGE */}
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
               <img
                 src={gallery[active]}
-                className="w-full h-[420px] object-cover transition duration-500"
+                className="w-full h-[220px] sm:h-[300px] md:h-[380px] lg:h-[420px] object-cover transition duration-500"
               />
             </div>
 
             {/* THUMBNAILS */}
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-2 sm:gap-3 mt-3 sm:mt-4">
               {gallery.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActive(i)}
-                  className={`h-16 w-24 rounded-lg overflow-hidden border transition ${
+                  className={`h-12 sm:h-14 lg:h-16 w-16 sm:w-20 lg:w-24 rounded-lg overflow-hidden border transition ${
                     active === i
                       ? "border-orange-400 scale-105"
                       : "border-white/10 opacity-60 hover:opacity-100"
@@ -117,13 +116,13 @@ export default function Inicio() {
       </div>
 
       {/* SECOND SECTION */}
-      <div className="mt-24 px-6 md:px-16 lg:px-24 pb-24">
+      <div className="mt-16 sm:mt-20 lg:mt-24 px-4 sm:px-6 md:px-16 lg:px-24 pb-20 sm:pb-24">
 
-        <h2 className="text-2xl font-bold mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">
           ¿Por qué BCP?
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
           {[
             {
@@ -141,12 +140,12 @@ export default function Inicio() {
           ].map((item, i) => (
             <div
               key={i}
-              className="p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+              className="p-5 sm:p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
             >
-              <h3 className="font-semibold" style={{ color: O }}>
+              <h3 className="font-semibold text-sm sm:text-base" style={{ color: O }}>
                 {item.title}
               </h3>
-              <p className="text-sm text-gray-300 mt-2">
+              <p className="text-xs sm:text-sm text-gray-300 mt-2">
                 {item.desc}
               </p>
             </div>
@@ -154,7 +153,8 @@ export default function Inicio() {
 
         </div>
       </div>
-      <Footer/>
+
+      <Footer />
     </div>
   );
 }
