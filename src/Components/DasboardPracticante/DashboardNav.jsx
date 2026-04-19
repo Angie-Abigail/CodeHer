@@ -23,7 +23,7 @@ export default function DashboardNav({ section, setSection }) {
         flex flex-col
       "
     >
-
+<br />
       {/* USER */}
       <div className="flex items-center gap-3 px-2 sm:px-3 mb-5 sm:mb-6">
         {user?.foto ? (

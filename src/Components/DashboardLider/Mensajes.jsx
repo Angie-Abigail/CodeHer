@@ -1,90 +1,251 @@
-import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { useEffect, useState, useRef } from "react";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+  addDoc,
+  serverTimestamp,
+  doc,
+  setDoc,
+  getDoc
+} from "firebase/firestore";
 import { db } from "../../Lib/firebase";
 import { useAuth } from "../../Context/AuthContext";
+import { ArrowLeft } from "lucide-react";
 
-export default function MensajesLider() {
+export default function Mensajes() {
   const { user } = useAuth();
+
+  const [conversaciones, setConversaciones] = useState([]);
+  const [activa, setActiva] = useState(null);
   const [mensajes, setMensajes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [texto, setTexto] = useState("");
+  const [usuarios, setUsuarios] = useState({});
+  const [mobileView, setMobileView] = useState("list"); // list | chat
 
+  const bottomRef = useRef(null);
+
+  /* ───────── CONVERSACIONES ───────── */
   useEffect(() => {
-  const fetchMensajes = async () => {
-    if (!user?.id) return;
+    if (!user?.uid) return;
 
-    setLoading(true);
+    const q = query(
+      collection(db, "conversaciones"),
+      where("participantes", "array-contains", user.uid),
+      orderBy("updatedAt", "desc")
+    );
+
+    const unsub = onSnapshot(q, async (snap) => {
+      const data = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data()
+      }));
+
+      setConversaciones(data);
+
+      data.forEach(async (conv) => {
+        const otro = conv.participantes.find(p => p !== user.uid);
+
+        if (!usuarios[otro]) {
+          const ref = doc(db, "usuariosbcp", otro);
+          const snapUser = await getDoc(ref);
+
+          if (snapUser.exists()) {
+            setUsuarios(prev => ({
+              ...prev,
+              [otro]: snapUser.data()
+            }));
+          }
+        }
+      });
+    });
+
+    return () => unsub();
+  }, [user]);
+
+  /* ───────── MENSAJES ───────── */
+  useEffect(() => {
+    if (!activa) return;
+
+    setMensajes([]);
 
     const q = query(
       collection(db, "mensajes"),
-      where("para", "==", user.id)
+      where("conversacionId", "==", activa),
+      orderBy("fecha", "asc")
     );
 
-    const snap = await getDocs(q);
+    const unsub = onSnapshot(q, (snap) => {
+      setMensajes(snap.docs.map(d => ({ id: d.id, ...d.data() })));
 
-    const data = snap.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    });
 
-    data.sort(
-      (a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0)
+    return () => unsub();
+  }, [activa]);
+
+  /* ───────── ENVIAR ───────── */
+  const enviarMensaje = async () => {
+    if (!texto.trim() || !activa) return;
+
+    const participantes = activa.split("_");
+
+    await setDoc(
+      doc(db, "conversaciones", activa),
+      {
+        participantes,
+        ultimoMensaje: texto,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
     );
 
-    setMensajes(data);
-    setLoading(false);
+    await addDoc(collection(db, "mensajes"), {
+      conversacionId: activa,
+      de: user.uid,
+      mensaje: texto,
+      fecha: serverTimestamp(),
+      leido: false,
+    });
+
+    setTexto("");
   };
 
-  fetchMensajes();
-}, [user]);
-  if (loading) {
-    return <div className="p-6 text-gray-400">Cargando mensajes...</div>;
-  }
+  const getOtroId = (conv) =>
+    conv.participantes.find(p => p !== user.uid);
 
-  if (mensajes.length === 0) {
-    return <div className="p-6 text-gray-400">No tienes mensajes.</div>;
-  }
-
+  /* ───────── UI ───────── */
   return (
-    <div className="p-6 space-y-4">
-      <h2 className="text-xl font-bold text-[#003087]">
-        Mensajes recibidos
-      </h2>
+  <div className="mt-6 mx-2 sm:mx-4 h-[calc(100vh-100px)] flex bg-white rounded-2xl overflow-hidden">
 
-      <div className="space-y-3">
-        {mensajes.map((m) => (
-          <div
-            key={m.uid}
-            className="bg-white border border-gray-100 rounded-xl p-4 flex gap-3 shadow-sm"
-          >
-            {/* AVATAR */}
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">
-              {m.de?.slice(0, 2).toUpperCase()}
-            </div>
+    {/* ───────── SIDEBAR / LISTA ───────── */}
+    <div
+      className={`
+        w-full sm:w-80 bg-[#F7F8FA] flex flex-col
+        ${mobileView === "chat" ? "hidden sm:flex" : "flex"}
+      `}
+    >
+      <div className="px-5 py-4 text-sm font-semibold text-gray-700">
+        Mensajes
+      </div>
 
-            {/* CONTENIDO */}
-            <div className="flex-1">
-              <div className="flex justify-between">
-                <p className="text-sm font-semibold">
-                  Usuario: {m.de}
-                </p>
+      <div className="flex-1 overflow-y-auto">
 
-                <span className="text-[11px] text-gray-400">
-                  {m.fecha?.toDate?.().toLocaleString?.()}
-                </span>
-              </div>
+        {conversaciones.map((conv) => {
+          const otroId = getOtroId(conv);
+          const otro = usuarios[otroId];
+          const active = activa === conv.id;
 
-              <p className="text-sm text-gray-600 mt-1">
-                {m.mensaje}
+          return (
+            <div
+              key={conv.id}
+              onClick={() => {
+                setActiva(conv.id);
+                setMobileView("chat"); // abre chat en móvil
+              }}
+              className={`px-5 py-3 cursor-pointer transition-all rounded-xl mx-2
+                ${active ? "bg-blue-100" : "hover:bg-gray-100"}
+              `}
+            >
+              <p className="text-sm font-semibold text-gray-800">
+                {otro?.nombre || "Usuario"}
+              </p>
+
+              <p className="text-xs text-gray-500 truncate mt-1">
+                {conv.ultimoMensaje}
               </p>
             </div>
+          );
+        })}
 
-            {/* NO LEÍDO */}
-            {!m.leido && (
-              <span className="w-2 h-2 rounded-full bg-blue-500 mt-2"></span>
-            )}
-          </div>
-        ))}
       </div>
     </div>
-  );
+
+    {/* ───────── CHAT ───────── */}
+    <div
+      className={`
+        flex-1 flex flex-col bg-[#FAFBFC]
+        ${mobileView === "list" ? "hidden sm:flex" : "flex"}
+      `}
+    >
+
+      {!activa ? (
+        <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+          Selecciona una conversación
+        </div>
+      ) : (
+        <>
+          {/* HEADER CHAT */}
+          <div className="px-4 sm:px-6 py-3 bg-white flex items-center gap-3">
+
+            {/* 🔙 BACK MOBILE */}
+            <button
+              className="sm:hidden text-gray-700 font-bold"
+              onClick={() => setMobileView("list")}
+            >
+              ←
+            </button>
+
+            <p className="text-sm font-semibold text-gray-700">
+              {usuarios[
+                getOtroId(conversaciones.find(c => c.id === activa) || {})
+              ]?.nombre || "Chat"}
+            </p>
+          </div>
+
+          {/* MENSAJES */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-3">
+
+            {mensajes.map((msg) => {
+              const esMio = msg.de === user.uid;
+
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex ${esMio ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className="max-w-[80%] sm:max-w-[70%] px-4 py-2 rounded-2xl text-sm"
+                    style={{
+                      background: esMio ? "#003087" : "#FFFFFF",
+                      color: esMio ? "white" : "#1F2937"
+                    }}
+                  >
+                    {msg.mensaje}
+                  </div>
+                </div>
+              );
+            })}
+
+            <div ref={bottomRef} />
+          </div>
+
+          {/* INPUT */}
+          <div className="p-3 sm:p-4 bg-white flex gap-2 sm:gap-3">
+
+            <input
+              value={texto}
+              onChange={(e) => setTexto(e.target.value)}
+              placeholder="Escribir mensaje..."
+              className="flex-1 text-sm px-4 py-2.5 rounded-xl bg-gray-100 focus:outline-none"
+            />
+
+            <button
+              onClick={enviarMensaje}
+              className="px-4 sm:px-5 py-2.5 text-sm text-white rounded-xl bg-[#003087]"
+            >
+              Enviar
+            </button>
+
+          </div>
+        </>
+      )}
+    </div>
+
+  </div>
+);
 }

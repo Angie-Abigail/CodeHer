@@ -147,14 +147,6 @@ export default function VerPerfil() {
                   </a>
                 ) : "No registrado"}
               </div>
-
-              <div>
-                <p className="text-gray-400 text-xs">CV</p>
-                <p className="text-gray-700">
-                  {user?.cv ? "Documento cargado" : "No subido"}
-                </p>
-              </div>
-
             </div>
           </div>
 

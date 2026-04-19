@@ -10,7 +10,7 @@ export default function DashboardNavLider({ section, setSection }) {
   ];
 
   return (
-    <div className="w-64 min-h-screen bg-[#F4F6FB] px-4 py-6 flex flex-col">
+    <div className="w-64 h-full md:min-h-screen bg-[#F4F6FB] px-4 py-6 flex flex-col overflow-y-auto">
 
 <br />
       {/* USER */}

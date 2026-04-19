@@ -3,7 +3,7 @@ import Navbar from "../../Components/Navbar/Navbar.jsx";
 import Footer from "../../Components/Footer/Footer.jsx";
 import Login from "../../Components/Login/Login.jsx";
 
-const O = "#F47920";
+const O = "#FF5000";
 
 export default function Inicio() {
   const [active, setActive] = useState(0);
@@ -23,7 +23,7 @@ export default function Inicio() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-blue-950 text-white overflow-hidden">
+    <div className="min-h-screen bg-white text-[#002A80] overflow-hidden">
 
       <Navbar />
 
@@ -42,12 +42,12 @@ export default function Inicio() {
               PROGRAMA DE PRÁCTICAS BCP
             </span>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mt-5 sm:mt-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mt-5 sm:mt-6 leading-tight text-[#002A80]">
               Impulsa tu futuro en el{" "}
               <span style={{ color: O }}>BCP</span>
             </h1>
 
-            <p className="text-gray-300 mt-5 sm:mt-6 max-w-xl text-sm sm:text-base leading-relaxed">
+            <p className="text-gray-600 mt-5 sm:mt-6 max-w-xl text-sm sm:text-base leading-relaxed">
               Forma parte del Banco de Crédito del Perú, la institución financiera más importante del país.
               Aprende con equipos de alto rendimiento, proyectos reales y tecnología de clase mundial.
             </p>
@@ -55,23 +55,24 @@ export default function Inicio() {
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8">
               <button
-  onClick={() => setShowLogin(true)}
-  className="px-5 sm:px-6 py-3 rounded-xl font-semibold transition hover:scale-105 w-full sm:w-auto"
-  style={{ background: O }}
->
-  Postular ahora
-</button>
+                onClick={() => setShowLogin(true)}
+                className="px-5 sm:px-6 py-3 rounded-xl font-semibold transition hover:scale-105 w-full sm:w-auto text-white"
+                style={{ background: O }}
+              >
+                Postular ahora
+              </button>
 
               <button
-  onClick={() =>
-    document.getElementById("porque-bcp")?.scrollIntoView({
-      behavior: "smooth",
-    })
-  }
-  className="px-5 sm:px-6 py-3 rounded-xl border border-white/20 hover:bg-white/10 transition w-full sm:w-auto"
->
-  Conocer más
-</button>
+                onClick={() =>
+                  document.getElementById("porque-bcp")?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+                }
+                className="px-5 sm:px-6 py-3 rounded-xl border transition w-full sm:w-auto"
+style={{ borderColor: O, color: O }}
+              >
+                Conocer más
+              </button>
             </div>
 
             {/* STATS */}
@@ -79,12 +80,13 @@ export default function Inicio() {
               {stats.map((s, i) => (
                 <div
                   key={i}
-                  className="bg-white/5 hover:bg-white/10 transition p-3 sm:p-4 rounded-xl border border-white/10"
+                  className="bg-white hover:shadow-md transition p-3 sm:p-4 rounded-xl border"
+style={{ borderColor: O }}
                 >
                   <p className="text-lg sm:text-xl font-bold" style={{ color: O }}>
                     {s.value}
                   </p>
-                  <p className="text-[11px] sm:text-xs text-gray-300 mt-1">
+                  <p className="text-[11px] sm:text-xs text-gray-600 mt-1">
                     {s.label}
                   </p>
                 </div>
@@ -110,11 +112,10 @@ export default function Inicio() {
                 <button
                   key={i}
                   onClick={() => setActive(i)}
-                  className={`h-12 sm:h-14 lg:h-16 w-16 sm:w-20 lg:w-24 rounded-lg overflow-hidden border transition ${
-                    active === i
-                      ? "border-orange-400 scale-105"
+                  className={`h-12 sm:h-14 lg:h-16 w-16 sm:w-20 lg:w-24 rounded-lg overflow-hidden border transition ${active === i
+                      ? "scale-105"
                       : "border-white/10 opacity-60 hover:opacity-100"
-                  }`}
+                    }`}
                 >
                   <img src={img} className="w-full h-full object-cover" />
                 </button>
@@ -126,17 +127,17 @@ export default function Inicio() {
       </div>
 
       {/* SECOND SECTION */}
-      
+
 
       <div
-  id="porque-bcp"
-  className="mt-16 sm:mt-20 lg:mt-24 px-4 sm:px-6 md:px-16 lg:px-24 pb-20 sm:pb-24 scroll-mt-32"
->
-  <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">
-    ¿Por qué BCP?
-  </h2>
+        id="porque-bcp"
+        className="mt-16 sm:mt-20 lg:mt-24 px-4 sm:px-6 md:px-16 lg:px-24 pb-20 sm:pb-24 scroll-mt-32"
+      >
+        <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-[#002A80]">
+          ¿Por qué BCP?
+        </h2>
 
-  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[
             {
               title: "Liderazgo",
@@ -153,12 +154,12 @@ export default function Inicio() {
           ].map((item, i) => (
             <div
               key={i}
-              className="p-5 sm:p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+              className="p-5 sm:p-6 rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition"
             >
               <h3 className="font-semibold text-sm sm:text-base" style={{ color: O }}>
                 {item.title}
               </h3>
-              <p className="text-xs sm:text-sm text-gray-300 mt-2">
+              <p className="text-xs sm:text-sm text-gray-900 mt-2">
                 {item.desc}
               </p>
             </div>
@@ -166,16 +167,16 @@ export default function Inicio() {
 
         </div>
       </div>
-      
+
       {showLogin && (
-  <Login
-    onClose={() => setShowLogin(false)}
-    irARegistro={() => {
-      setShowLogin(false);
-      // aquí luego puedes abrir registro si quieres
-    }}
-  />
-)}
+        <Login
+          onClose={() => setShowLogin(false)}
+          irARegistro={() => {
+            setShowLogin(false);
+            // aquí luego puedes abrir registro si quieres
+          }}
+        />
+      )}
 
       <Footer />
     </div>

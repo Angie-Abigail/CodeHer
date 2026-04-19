@@ -5,6 +5,7 @@ import Registro from "../Registro/Registro";
 import UserMenu from "../UserMenu/UserMenu";
 import { useAuth } from "../../Context/AuthContext";
 import { Menu, X } from "lucide-react";
+import logo from "../../assets/logo.png"
 
 export default function Navbar() {
   const [modal, setModal] = useState(null);
@@ -18,16 +19,16 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full z-50 bg-blue-950/95 backdrop-blur-md shadow-md border-b border-white/10">
+      <div className="fixed top-0 left-0 w-full z-50 shadow-md border-b border-white/10 bg-[#002A80]">
         <div className="w-full px-6 md:px-16 lg:px-24 py-3 flex justify-between items-center">
 
           {/* LEFT */}
           <div className="flex items-center gap-6">
             <Link
               to="/"
-              className="text-white font-extrabold text-xl tracking-wide"
+              
             >
-              BCP
+              <img src={logo} alt=""  className="h-8 md:h-10 lg:h-12 w-auto object-contain"/>
             </Link>
 
             {/* DESKTOP NAV */}

@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-blue-950 text-white mt-16">
+    <footer className="bg-[#002A80] text-white mt-16">
       <div className="w-full px-6 md:px-16 lg:px-24 py-10">
 
         {/* TOP */}
@@ -33,13 +33,13 @@ export default function Footer() {
         </div>
 
         {/* DIVIDER */}
-        <div className="border-t border-white/10 my-6" />
+        <div className="border-t border-white/20 my-6" />
 
         {/* BOTTOM */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-[11px] text-blue-300 text-center md:text-left">
 
           <p>
-            © 2026 Banco de Crédito del Perú - BCP. Todos los derechos reservados.
+            ©2026 Cuenta de Ahorros | Todos los derechos reservados
           </p>
 
           <p className="text-blue-400">

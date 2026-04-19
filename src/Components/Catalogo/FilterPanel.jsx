@@ -1,50 +1,48 @@
 import React, { useState } from "react";
 
-/* ─── SECTION (COLLAPSIBLE) ─── */
-const FilterSection = ({ title, items, selected, onToggle }) => {
+const BLUE = "#002A80";
+
+/* ───────── FILTER SECTION ───────── */
+const FilterSection = ({ title, items = [], selected = [], onToggle }) => {
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="border-b border-gray-100 py-4 last:border-none">
+    <div className="border-b border-gray-100 py-3 last:border-none">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between mb-3"
+        className="w-full flex items-center justify-between mb-2"
       >
-        <h3 className="text-[12px] font-bold tracking-widest text-[#003087] uppercase">
+        <h3 className="text-[11px] font-bold tracking-widest uppercase" style={{ color: BLUE }}>
           {title}
         </h3>
         <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          className="text-gray-400 transition-transform duration-200 flex-shrink-0"
+          width="13" height="13" viewBox="0 0 24 24" fill="none"
+          className="text-gray-400 transition-transform duration-200 shrink-0"
           style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         >
-          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
       {open && (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-1.5">
           {items.map((item) => {
-            const name = item.nombre || item;
+            const name = item.nombre ?? item;
             const active = selected.includes(name);
-
             return (
               <button
                 key={name}
                 onClick={() => onToggle(name)}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-[13px] transition-all border"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[13px] border transition-all font-medium text-left"
                 style={{
-                  background: active ? "#003087" : "white",
-                  color: active ? "white" : "#4B5563",
-                  borderColor: active ? "#003087" : "#E5E7EB",
+                  background: active ? BLUE : "white",
+                  color: active ? "white" : "#374151",
+                  borderColor: active ? BLUE : "#E5E7EB",
                 }}
               >
-                <span className="truncate text-left font-medium">{name}</span>
+                <span className="truncate">{name}</span>
                 {active && (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="shrink-0 ml-2">
                     <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
@@ -57,105 +55,181 @@ const FilterSection = ({ title, items, selected, onToggle }) => {
   );
 };
 
-/* ─── MAIN ─── */
-const FilterPanel = ({
-  areas,
-  carreras,
-  selectedAreas,
-  selectedCarreras,
-  selectedDisponibilidad,
-  onToggleArea,
-  onToggleCarrera,
-  onToggleDisponibilidad,
-  onClearAll,
-  totalResults,
+/* ───────── FILTER CONTENT ───────── */
+const FilterContent = ({
+  areas = [], carreras = [], disponibilidad = [],
+  selectedAreas = [], selectedCarreras = [], selectedDisponibilidad = [],
+  onToggleArea, onToggleCarrera, onToggleDisponibilidad,
+  onClearAll, totalResults, totalFiltros, onClose,
 }) => {
-  const totalFiltros =
-    selectedAreas.length + selectedCarreras.length + selectedDisponibilidad.length;
+  const [dispOpen, setDispOpen] = useState(true);
 
   return (
-    <aside className="w-60 flex-shrink-0">
-      <div className="sticky top-6 bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+    <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden h-full flex flex-col">
 
-        {/* HEADER */}
-        <div className="bg-[#003087] px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                <path d="M3 6h18M7 12h10M11 18h2" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      {/* HEADER */}
+      <div className="px-4 py-4 shrink-0" style={{ background: BLUE }}>
+        <div className="flex justify-between items-center">
+          <h2 className="text-white text-[13px] font-bold tracking-wide">Filtros</h2>
+          {onClose && (
+            <button onClick={onClose} className="text-white/70 hover:text-white transition-colors p-1 rounded">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
-              <h2 className="text-white text-[13px] font-bold tracking-wide">Filtros</h2>
-            </div>   
-          </div>
-
-          <div className="flex items-center justify-between mt-2">
-            <p className="text-[12px] text-blue-200">
-              {totalResults} resultado{totalResults !== 1 ? "s" : ""}
-            </p>
-
-            {/* Botón limpiar */}
-            {totalFiltros > 0 && (
-              <button
-                onClick={onClearAll}
-                className="text-[11px] font-semibold text-blue-200 hover:text-white transition-colors underline underline-offset-2"
-              >
-                Limpiar todo
-              </button>
-            )}
-          </div>
+            </button>
+          )}
+        </div>
+        <div className="flex justify-between items-center mt-2">
+          <p className="text-[12px] text-blue-200">{totalResults} resultados</p>
+          {totalFiltros > 0 && (
+            <button onClick={onClearAll} className="text-[11px] text-blue-200 underline hover:text-white transition-colors">
+              Limpiar todo
+            </button>
+          )}
         </div>
 
-        
-        {/* SECCIONES */}
-        <div className="px-3 pb-2">
-          <FilterSection
-            title="Áreas"
-            items={areas}
-            selected={selectedAreas}
-            onToggle={onToggleArea}
-          />
+        {/* Active filters count badge */}
+        {totalFiltros > 0 && (
+          <div className="mt-2 flex gap-1 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-medium">
+              {totalFiltros} {totalFiltros === 1 ? "filtro activo" : "filtros activos"}
+            </span>
+          </div>
+        )}
+      </div>
 
-          <FilterSection
-            title="Carreras"
-            items={carreras}
-            selected={selectedCarreras}
-            onToggle={onToggleCarrera}
-          />
+      {/* BODY — scrollable */}
+      <div className="px-3 pb-3 overflow-y-auto flex-1">
+        <FilterSection title="Áreas" items={areas} selected={selectedAreas} onToggle={onToggleArea} />
+        <FilterSection title="Carreras" items={carreras} selected={selectedCarreras} onToggle={onToggleCarrera} />
 
-          {/* DISPONIBILIDAD */}
-          <div className="pt-4">
-            <h3 className="text-[12px] font-bold tracking-widest text-[#003087] uppercase mb-3">
+        {/* DISPONIBILIDAD */}
+        <div className="py-3">
+          <button
+            onClick={() => setDispOpen(!dispOpen)}
+            className="w-full flex items-center justify-between mb-2"
+          >
+            <h3 className="text-[11px] font-bold tracking-widest uppercase" style={{ color: BLUE }}>
               Disponibilidad
             </h3>
-            <div className="space-y-2">
-              {["Full-time", "Part-time"].map((item) => {
-                const active = selectedDisponibilidad.includes(item);
-                return (
-                  <button
-                    key={item}
-                    onClick={() => onToggleDisponibilidad(item)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] border transition-all font-medium"
-                    style={{
-                      background: active ? "#003087" : "white",
-                      color: active ? "white" : "#4B5563",
-                      borderColor: active ? "#003087" : "#E5E7EB",
-                    }}
-                  >
-                    <span>{item}</span>
-                    {active && (
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
-                        <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </button>
-                );
-              })}
+            <svg
+              width="13" height="13" viewBox="0 0 24 24" fill="none"
+              className="text-gray-400 transition-transform duration-200 shrink-0"
+              style={{ transform: dispOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            >
+              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {dispOpen && (
+            <div className="flex flex-col gap-1.5">
+              {disponibilidad.length > 0 ? (
+                disponibilidad.map((item) => {
+                  const name = item.nombre ?? item;
+                  const active = selectedDisponibilidad.includes(name);
+                  return (
+                    <button
+                      key={name}
+                      onClick={() => onToggleDisponibilidad(name)}
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-[13px] transition-all font-medium"
+                      style={{
+                        background: active ? BLUE : "white",
+                        color: active ? "white" : "#374151",
+                        borderColor: active ? BLUE : "#E5E7EB",
+                      }}
+                    >
+                      <span className="truncate text-left">{name}</span>
+                      {active && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="shrink-0 ml-2">
+                          <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })
+              ) : (
+                <p className="text-xs text-gray-400 px-1 py-2">Sin opciones de disponibilidad</p>
+              )}
             </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ───────── FILTER PANEL ───────── */
+const FilterPanel = ({
+  areas, carreras, disponibilidad,
+  selectedAreas, selectedCarreras, selectedDisponibilidad,
+  onToggleArea, onToggleCarrera, onToggleDisponibilidad,
+  onClearAll, totalResults,
+}) => {
+  const [openMobile, setOpenMobile] = useState(false);
+
+  const totalFiltros =
+    (selectedAreas?.length ?? 0) +
+    (selectedCarreras?.length ?? 0) +
+    (selectedDisponibilidad?.length ?? 0);
+
+  const sharedProps = {
+    areas, carreras, disponibilidad,
+    selectedAreas, selectedCarreras, selectedDisponibilidad,
+    onToggleArea, onToggleCarrera, onToggleDisponibilidad,
+    onClearAll, totalResults, totalFiltros,
+  };
+
+  return (
+    <>
+      {/* ── MOBILE TRIGGER ── */}
+      <div className="md:hidden mb-3">
+        <button
+          onClick={() => setOpenMobile(true)}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-white text-sm font-semibold shadow-md transition-all"
+          style={{ background: BLUE }}
+        >
+          <span className="flex items-center gap-2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h16M7 12h10M10 18h4" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+            Filtros
+          </span>
+          {totalFiltros > 0 && (
+            <span className="bg-white text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ color: BLUE }}>
+              {totalFiltros}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* ── MOBILE DRAWER ── */}
+      {openMobile && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOpenMobile(false)}
+          />
+
+          {/* Drawer panel */}
+          <div
+            className="relative ml-auto w-[85%] max-w-xs h-full bg-white shadow-2xl flex flex-col"
+            style={{ animation: "slideIn 0.22s ease-out" }}
+          >
+            <style>{`@keyframes slideIn { from { transform: translateX(100%) } to { transform: translateX(0) } }`}</style>
+            <FilterContent
+              {...sharedProps}
+              onClose={() => setOpenMobile(false)}
+            />
           </div>
         </div>
+      )}
 
-      </div>
-    </aside>
+      {/* ── DESKTOP SIDEBAR ── */}
+      <aside className="hidden md:flex flex-col w-56 lg:w-60 shrink-0">
+        <FilterContent {...sharedProps} />
+      </aside>
+    </>
   );
 };
 

@@ -114,7 +114,6 @@ const FloatingSelect = ({ label, name, value, onChange, options }) => {
 export default function Perfil() {
   const { user, updateUser, getAreas, getCarreras, getDisponibilidad } = useAuth();
   const fileRef = useRef();
-  const cvRef = useRef();
   const [areas, setAreas] = useState([]);
   const [carreras, setCarreras] = useState([]);
   const [disponibilidad, setDisponibilidad] = useState([]);
@@ -122,11 +121,10 @@ export default function Perfil() {
   const [form, setForm] = useState({
     nombre: "", correo: "", universidad: "", ciclo: "",
     area: "", areaId: "", carrera: "", carreraId: "", disponibilidad: "", disponibilidadId:"", linkedin: "", github: "",
-    cv: null, foto: null,
+    foto: null,
   });
 
   const [preview, setPreview] = useState(null);
-  const [cvName, setCvName] = useState(null);
   const [saved, setSaved] = useState(false);
 
   const [listas, setListas] = useState({
@@ -144,7 +142,7 @@ export default function Perfil() {
       universidad: user.universidad || "", ciclo: user.ciclo || "",
       area: user.area || "", carrera: user.carrera || "",
       disponibilidad: user.disponibilidad || "", linkedin: user.linkedin || "",
-      github: user.github || "", cv: user.cv || null, foto: user.foto || null,
+      github: user.github || "" || null, foto: user.foto || null,
       areaId: user.areaId || "", carreraId: user.carreraId || "",
     });
     setPreview(user.foto || null);
@@ -176,14 +174,6 @@ export default function Perfil() {
     setForm({ ...form, foto: file });
     setPreview(URL.createObjectURL(file));
   };
-
-  const handleCV = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setForm({ ...form, cv: file });
-    setCvName(file.name);
-  };
-
   const addItem = (tipo, value) => {
     if (!value.trim()) return;
     setListas((prev) => ({ ...prev, [tipo]: [...prev[tipo], value] }));
@@ -369,7 +359,7 @@ export default function Perfil() {
           </div>
         </div>
 
-        {/* ── Card 2: Links & CV ── */}
+        {/* ── Card 2: Links ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
           <div className="p-8">
@@ -425,50 +415,7 @@ export default function Perfil() {
                     />
                   </div>
                 </div>
-              </div>
-
-              {/* CV Upload */}
-              <div
-                onClick={() => cvRef.current.click()}
-                className="flex items-center gap-3 border-2 rounded-xl px-4 py-3.5 cursor-pointer transition-all duration-200 group"
-                style={{
-                  borderColor: cvName ? ORANGE : "#E2E8F0",
-                  background: cvName ? ORANGE_LIGHT : "white",
-                }}
-              >
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
-                  style={{ background: cvName ? ORANGE : "#F1F5F9" }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" />
-                    <polyline points="14 2 14 8 20 8" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" />
-                    <line x1="9" y1="13" x2="15" y2="13" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="9" y1="17" x2="13" y2="17" stroke={cvName ? "white" : "#94A3B8"} strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: cvName ? ORANGE : "#94A3B8" }}>
-                    CURRÍCULUM VITAE
-                  </div>
-                  <div className="text-sm truncate" style={{ color: cvName ? "#92400E" : "#94A3B8" }}>
-                    {cvName || "Subir archivo PDF"}
-                  </div>
-                </div>
-                {!cvName && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-gray-300">
-                    <path d="M12 4v16m8-8H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                )}
-                {cvName && (
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: ORANGE }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                      <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <input ref={cvRef} type="file" accept=".pdf" className="hidden" onChange={handleCV} />
+              </div>  
             </div>
           </div>
         </div>

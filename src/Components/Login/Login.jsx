@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../Context/AuthContext";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import logo from "../../assets/logo.png"
 
 export default function Login({ onClose, irARegistro }) {
   const { login, loginGoogle } = useAuth();
@@ -54,9 +55,9 @@ export default function Login({ onClose, irARegistro }) {
         </button>
 
         {/* LOGO */}
-        <h2 className="text-center text-2xl font-bold text-blue-900 mb-2">
-          BCP
-        </h2>
+        <div className="bg-[#002A80] -mx-8 -mt-8 mb-4 p-1 rounded-t-2xl flex justify-center">
+  <img src={logo} alt="logo" className="h-10 w-auto object-contain" />
+</div>
 
         <h3 className="text-center text-xl font-semibold text-gray-900">
           Iniciar sesión
@@ -127,7 +128,7 @@ export default function Login({ onClose, irARegistro }) {
         {/* LOGIN BUTTON */}
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-900 text-white py-2 rounded-lg mt-6 hover:bg-blue-800 transition"
+          className="w-full bg-orange-500 text-white py-2 rounded-lg mt-6 hover:bg-orange-400 transition"
         >
           Iniciar sesión
         </button>

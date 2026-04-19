@@ -7,6 +7,7 @@ import SearchBar from "../../Components/Catalogo/SearchBar";
 import AreaTabs from "../../Components/Catalogo/AreaTabs";
 import PractitionerCard from "../../Components/Catalogo/PractitionerCard";
 import Pagination from "../../Components/Catalogo/Pagination";
+import Footer from "../../Components/Footer/Footer"
 
 import Navbar from "../../Components/Navbar/Navbar";
 
@@ -17,7 +18,7 @@ const CatalogoPracticantes = () => {
 
   const [areas, setAreas] = useState([]);
   const [carreras, setCarreras] = useState([]);
-  const [disponibilidades, setDisponibilidades] = useState([]);
+  const [disponibilidad, setDisponibilidad] = useState([]);
 
   const [selectedAreas, setSelectedAreas] = useState([]);
   const [selectedCarreras, setSelectedCarreras] = useState([]);
@@ -47,10 +48,9 @@ const CatalogoPracticantes = () => {
     };
 
     const fetchDisponibilidad = async () => {
-      const snap = await getDocs(collection(db, "disponibilidades"));
-      setDisponibilidades(snap.docs.map((d) => d.data().nombre));
-    };
-
+  const snap = await getDocs(collection(db, "disponibilidad")); // ojo nombre colección
+  setDisponibilidad(snap.docs.map(d => d.data().nombre));
+};
     fetchData();
     fetchAreas();
     fetchCarreras();
@@ -104,61 +104,82 @@ const CatalogoPracticantes = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F4F6FB] pt-20">
-      <Navbar />
+  <div className="min-h-screen bg-[#F4F6FB] pt-16 lg:pt-20">
+    <Navbar />
 
-      <div className="w-full px-6 lg:px-10 py-8 flex gap-6">
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-6 lg:py-8">
+      
+      {/* LAYOUT */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
 
         {/* FILTERS */}
-        <FilterPanel
-          areas={areas}
-          carreras={carreras}
-          disponibilidades={disponibilidades}
+        <div className="lg:sticky lg:top-24 self-start">
+          <FilterPanel
+            areas={areas}
+            carreras={carreras}
+            disponibilidad={disponibilidad}
 
-          selectedAreas={selectedAreas}
-          selectedCarreras={selectedCarreras}
-          selectedDisponibilidad={selectedDisponibilidad}
+            selectedAreas={selectedAreas}
+            selectedCarreras={selectedCarreras}
+            selectedDisponibilidad={selectedDisponibilidad}
 
-          onToggleArea={toggleItem(setSelectedAreas)}
-          onToggleCarrera={toggleItem(setSelectedCarreras)}
-          onToggleDisponibilidad={toggleItem(setSelectedDisponibilidad)}
+            onToggleArea={toggleItem(setSelectedAreas)}
+            onToggleCarrera={toggleItem(setSelectedCarreras)}
+            onToggleDisponibilidad={toggleItem(setSelectedDisponibilidad)}
 
-          onClearAll={handleClearFilters}
-          totalResults={filtered.length}
-        />
+            onClearAll={handleClearFilters}
+            totalResults={filtered.length}
+          />
+        </div>
 
         {/* CONTENT */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
 
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
-          {/* 🔥 AREA TABS AHORA MODIFICAN selectedAreas */}
-          <AreaTabs
-  areas={areas.map((a) => ({ nombre: a }))}
-  selectedArea={selectedAreas[0] || null}
-  onSelectArea={(a) => {
-    setSelectedAreas(a ? [a] : []);
-    setCurrentPage(1);
-  }}
-  className="mt-4"
-/>
+          {/* TABS */}
+          <div className="mt-4 overflow-x-auto">
+            <AreaTabs
+              areas={areas.map((a) => ({ nombre: a }))}
+              selectedArea={selectedAreas[0] || null}
+              onSelectArea={(a) => {
+                setSelectedAreas(a ? [a] : []);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
 
-          {/* LIST */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mt-6">
+          {/* GRID */}
+          <div
+            className="
+              grid gap-4 mt-6
+              grid-cols-1
+              sm:grid-cols-2
+              lg:grid-cols-2
+              xl:grid-cols-3
+              2xl:grid-cols-4
+            "
+          >
             {paginated.map((p) => (
               <PractitionerCard key={p.id} practicante={p} />
             ))}
           </div>
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          {/* PAGINATION */}
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+
         </div>
       </div>
     </div>
-  );
+<Footer />
+  </div>
+);
 };
 
 export default CatalogoPracticantes;

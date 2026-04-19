@@ -25,7 +25,6 @@ export default function Registro({ onClose, irALogin }) {
   universidad: "", ciclo: "",
   descripcion: "", motivaciones: "",
   linkedin: "", github: "",
-  cv: null,
   foto: null
 });
 
@@ -62,13 +61,6 @@ export default function Registro({ onClose, irALogin }) {
       setPreview(URL.createObjectURL(file));
     }
   };
-
-  const handleCV = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setForm({ ...form, cv: file });
-  }
-};
 
   const ejecutarRegistro = async () => {
   if (!form.nombre || !form.correo || !form.contraseña) {
@@ -261,72 +253,12 @@ export default function Registro({ onClose, irALogin }) {
           </div>
         </div>
 
-        {/* LINKS + CV */}
+       
         <div className="grid md:grid-cols-2 gap-5">
           <input name="linkedin" placeholder="Link de LinkedIn" className={input} onChange={handleChange} />
           <input name="github" placeholder="Link de GitHub" className={input} onChange={handleChange} />
 
-          <div className="md:col-span-2 space-y-2">
-  <label className="text-sm font-medium text-gray-700">
-    Subir CV (PDF)
-  </label>
-
-  {!form.cv ? (
-    <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-900 transition">
-      <span className="text-sm text-gray-500">
-        Haz clic para subir tu CV
-      </span>
-      <span className="text-xs text-gray-400 mt-1">
-        Solo archivos PDF
-      </span>
-
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={handleCV}
-        className="hidden"
-      />
-    </label>
-  ) : (
-    <div className="flex items-center justify-between border border-gray-300 rounded-xl px-4 py-3 bg-gray-50">
-      
-      {/* INFO ARCHIVO */}
-      <div className="flex items-center gap-3">
-        <div className="bg-blue-100 text-blue-900 px-2 py-1 rounded-md text-xs font-bold">
-          PDF
-        </div>
-
-        <p className="text-sm text-gray-700 truncate max-w-[200px]">
-          {form.cv.name}
-        </p>
-      </div>
-
-      {/* ACCIONES */}
-      <div className="flex items-center gap-2">
-
-        {/* CAMBIAR */}
-        <label className="text-blue-900 text-sm cursor-pointer hover:underline">
-          Cambiar
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleCV}
-            className="hidden"
-          />
-        </label>
-
-        {/* ELIMINAR */}
-        <button
-          onClick={() => setForm({ ...form, cv: null })}
-          className="text-red-500 text-sm hover:underline"
-        >
-          Eliminar
-        </button>
-
-      </div>
-    </div>
-  )}
-</div>
+          
         </div>
 
       </div>

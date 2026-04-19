@@ -1,8 +1,18 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { doc, getDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  serverTimestamp,
+  doc,
+  getDoc
+} from "firebase/firestore";
 import { db } from "../../Lib/firebase.js";
 import { useAuth } from "../../Context/AuthContext.jsx"
+import EscribirMensaje from "./EscribirMensaje.jsx";
 
 function Section({ title, subtitle }) {
   return (
@@ -44,77 +54,13 @@ function Field({ label, value }) {
   );
 }
 
-function ModalMensaje({ open, onClose, onSend }) {
-  const [mensaje, setMensaje] = useState("");
-
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center">
-
-      {/* BACKDROP */}
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
-
-      {/* MODAL */}
-      <div className="relative bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
-
-        <h2 className="text-lg font-bold mb-4">Enviar mensaje</h2>
-
-        <textarea
-          value={mensaje}
-          onChange={(e) => setMensaje(e.target.value)}
-          className="w-full border rounded-lg p-3 text-sm"
-          rows={5}
-          placeholder="Escribe tu mensaje..."
-        />
-
-        <div className="flex justify-end gap-2 mt-4">
-
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm border rounded-lg"
-          >
-            Cancelar
-          </button>
-
-          <button
-            onClick={() => onSend(mensaje)}
-            className="px-4 py-2 text-sm text-white rounded-lg"
-            style={{ background: "#003087" }}
-          >
-            Enviar
-          </button>
-
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function VerPracticante({ open, onClose, id }) {
   const [practicante, setPracticante] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [openMessage, setOpenMessage] = useState(false);
   const { user } = useAuth();
-const sendMessage = async (mensaje) => {
-  try {
-    await addDoc(collection(db, "mensajes"), {
-      de: user?.uid, // luego lo cambias por user.uid
-      para: id,
-      mensaje,
-      fecha: serverTimestamp(),
-      leido: false
-    });
+  const [openMessage, setOpenMessage] = useState(false);
+  const [disponibilidades, setDisponibilidades] = useState([]);
 
-    setOpenMessage(false);
-  } catch (error) {
-    console.error("Error enviando mensaje:", error);
-  }
-};
-  
   useEffect(() => {
     if (!open || !id) return;
 
@@ -137,6 +83,13 @@ const sendMessage = async (mensaje) => {
       }
     };
 
+    const cargarDisponibilidad = async () => {
+  const snap = await getDocs(collection(db, "disponibilidad"));
+  setDisponibilidades(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+};
+
+cargarDisponibilidad();
+
     fetchData();
   }, [open, id]);
 
@@ -150,7 +103,14 @@ const sendMessage = async (mensaje) => {
     capacitaciones: practicante?.capacitaciones || [],
   };
 
+  const disponibilidadNombre =
+  disponibilidades.find(d => d.id === practicante?.disponibilidadId)?.nombre
+  || practicante?.disponibilidad;
+
+
+
   return (
+    
     <div className="fixed inset-0 z-50 flex items-center justify-center">
 
       {/* BACKDROP */}
@@ -192,13 +152,28 @@ const sendMessage = async (mensaje) => {
                   <div className="h-12" />
                   {/* BOTÓN ARRIBA DERECHA */}
   <div className="absolute top-43 right-30">
-    <button
-      onClick={() => setOpenMessage(true)}
-      className="px-3 py-2 text-xs font-semibold rounded-lg text-white shadow"
-      style={{ background: "#003087" }}
-    >
-      Enviar mensaje
-    </button>
+ <button
+  onClick={() => setOpenMessage(true)}
+  className="
+    px-4 py-2
+    bg-[#003087]
+    text-white
+    text-sm font-semibold
+    rounded-lg
+    shadow-sm
+    hover:bg-[#00246b]
+    active:scale-95
+    transition-all duration-200
+  "
+>
+  Enviar mensaje
+</button>
+
+<EscribirMensaje
+  open={openMessage}
+  onClose={() => setOpenMessage(false)}
+  receptorId={id}
+/>
   </div>
 
                   <div className="p-6 flex items-center gap-6 -mt-12">
@@ -224,13 +199,10 @@ const sendMessage = async (mensaje) => {
                       </p>
 
                       <div className="mt-3 flex flex-wrap items-center gap-3">
-                        {practicante?.disponibilidad && (
-                          <Chip>{practicante.disponibilidad}</Chip>
-                        )}
-
-                        <span className="text-xs text-gray-400">
-                          {practicante?.email}
-                        </span>
+                      
+  {disponibilidadNombre && (
+  <Chip>{disponibilidadNombre}</Chip>
+)}
                       </div>
                     </div>
                   </div>
@@ -247,7 +219,7 @@ const sendMessage = async (mensaje) => {
 
                       <div className="space-y-4 mt-4">
                         <Field label="Nombre" value={practicante?.nombre} />
-                        <Field label="Correo" value={practicante?.email} />
+                        <Field label="Correo" value={practicante?.correo} />
                         <Field label="Universidad" value={practicante?.universidad} />
                         <Field label="Ciclo" value={practicante?.ciclo} />
                       </div>
@@ -287,13 +259,6 @@ const sendMessage = async (mensaje) => {
                           ) : (
                             "No registrado"
                           )}
-                        </div>
-
-                        <div>
-                          <p className="text-gray-400 text-xs">CV</p>
-                          <p className="text-gray-700">
-                            {practicante?.cv ? "Documento cargado" : "No subido"}
-                          </p>
                         </div>
 
                       </div>
@@ -374,12 +339,7 @@ const sendMessage = async (mensaje) => {
 
         </div>
       </div>
-
-      <ModalMensaje
-  open={openMessage}
-  onClose={() => setOpenMessage(false)}
-  onSend={sendMessage}
-/>
+      
     </div>
 
     
