@@ -157,7 +157,6 @@ export default function VerPracticante({ open, onClose, id }) {
 
                 <div className="h-10 sm:h-12" />
 
-                {/* BOTÓN RESPONSIVE */}
                 <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
                   <button
                     onClick={() => setOpenMessage(true)}
@@ -184,7 +183,6 @@ export default function VerPracticante({ open, onClose, id }) {
                   />
                 </div>
 
-                {/* HEADER CONTENT */}
                 <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 -mt-10 sm:-mt-12">
 
                   <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-white shadow-md overflow-hidden bg-gray-100">
@@ -215,10 +213,7 @@ export default function VerPracticante({ open, onClose, id }) {
                 </div>
               </div>
 
-              {/* GRID */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-
-                {/* IZQUIERDA */}
                 <div className="space-y-4 sm:space-y-6">
 
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
@@ -232,7 +227,6 @@ export default function VerPracticante({ open, onClose, id }) {
                     </div>
                   </div>
 
-                  {/* LINKS */}
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <Section title="Links" />
 
@@ -267,7 +261,6 @@ export default function VerPracticante({ open, onClose, id }) {
 
                 </div>
 
-                {/* DERECHA */}
                 <div className="md:col-span-2 space-y-4 sm:space-y-6">
 
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
@@ -292,7 +285,6 @@ export default function VerPracticante({ open, onClose, id }) {
                     <p className="text-sm mt-4">
                       {listas.experiencia || "Sin experiencia registrada"}
                     </p> </div>
-              {/* FORMACIÓN Y HABILIDADES */} 
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"> 
                 <Section title="Formación y habilidades" /> 
                 <div className="mt-4"> 
@@ -318,10 +310,7 @@ export default function VerPracticante({ open, onClose, id }) {
                 </div> </div>
                   </div>
 
-                </div>
-
-             
-
+                </div>        
             </div>
           )}
 

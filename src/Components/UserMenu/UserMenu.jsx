@@ -41,13 +41,11 @@ export default function UserMenu({ user }) {
   return (
     <div className="relative" ref={ref}>
 
-      {/* TRIGGER */}
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition"
       >
 
-        {/* FOTO (MÁS GRANDE) */}
         {user?.foto ? (
           <img
             src={user.foto}
@@ -59,7 +57,6 @@ export default function UserMenu({ user }) {
           </div>
         )}
 
-        {/* INFO */}
         <div className="hidden sm:block text-left leading-tight">
           <p className="text-white text-sm font-semibold">
             {user?.nombre?.split(" ")[0]}
@@ -77,7 +74,6 @@ export default function UserMenu({ user }) {
         />
       </button>
 
-      {/* DROPDOWN (MÁS GRANDE) */}
       <div
   className={`absolute mt-3 w-[90vw] max-w-64
   bg-white shadow-xl border border-gray-100
@@ -89,7 +85,6 @@ export default function UserMenu({ user }) {
 `}
 >
 
-        {/* HEADER */}
         <div className="px-5 py-4  ">
           <p className="text-base font-semibold text-gray-800 truncate">
             {user?.nombre}
@@ -99,7 +94,6 @@ export default function UserMenu({ user }) {
           </p>
         </div>
 
-        {/* OPTIONS */}
         <div className="py-2">
 
           <button
@@ -118,7 +112,6 @@ export default function UserMenu({ user }) {
 
         </div>
 
-        {/* ACCENT */}
         <div className="h-[3px]" style={{ background: O }} />
       </div>
     </div>

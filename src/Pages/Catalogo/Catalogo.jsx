@@ -73,7 +73,6 @@ const CatalogoPracticantes = () => {
     setCurrentPage(1);
   };
 
-  // 🔥 FILTRO UNIFICADO
   const filtered = practicantes.filter((p) => {
     const matchArea =
       selectedAreas.length === 0 || selectedAreas.includes(p.area);
@@ -132,12 +131,10 @@ const CatalogoPracticantes = () => {
           />
         </div>
 
-        {/* CONTENT */}
         <div className="flex-1 min-w-0">
 
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
-          {/* TABS */}
           <div className="mt-4 overflow-x-auto">
             <AreaTabs
               areas={areas.map((a) => ({ nombre: a }))}
@@ -149,7 +146,6 @@ const CatalogoPracticantes = () => {
             />
           </div>
 
-          {/* GRID */}
           <div
             className="
               grid gap-4 mt-6
@@ -165,7 +161,6 @@ const CatalogoPracticantes = () => {
             ))}
           </div>
 
-          {/* PAGINATION */}
           <div className="mt-8 flex justify-center">
             <Pagination
               currentPage={currentPage}

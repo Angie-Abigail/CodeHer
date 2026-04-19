@@ -16,7 +16,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AuthContext = createContext();
 
-const SESSION_KEY = "bcp_session_uid"; // clave en localStorage
+const SESSION_KEY = "bcp_session_uid";
 
 const getAreas = async () => {
   const snapshot = await getDocs(collection(db, "areas"));
@@ -37,7 +37,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Busca usuario en Firestore por su doc ID
   const fetchUserById = async (uid) => {
     const docRef = doc(db, "usuariosbcp", uid);
     const snap = await getDoc(docRef);
@@ -45,7 +44,6 @@ export function AuthProvider({ children }) {
     return { uid: snap.id, ...snap.data() };
   };
 
-  // 🔁 AL CARGAR LA APP — restaurar sesión desde localStorage
   useEffect(() => {
     const restore = async () => {
       try {
@@ -56,7 +54,6 @@ export function AuthProvider({ children }) {
         if (userData) {
           setUser(userData);
         } else {
-          // El uid guardado ya no existe en Firestore
           localStorage.removeItem(SESSION_KEY);
         }
       } catch (error) {
@@ -70,7 +67,6 @@ export function AuthProvider({ children }) {
     restore();
   }, []);
 
-  // 🔐 LOGIN
   const login = async (correo, contraseña) => {
     const q = query(
       collection(db, "usuariosbcp"),
@@ -83,13 +79,11 @@ export function AuthProvider({ children }) {
     const docData = snapshot.docs[0];
     const userData = { uid: docData.id, ...docData.data() };
 
-    // Guardar uid en localStorage para persistir entre recargas
     localStorage.setItem(SESSION_KEY, docData.id);
     setUser(userData);
     return userData;
   };
 
-  // 🟢 REGISTER
   const register = async (data) => {
     let fotoURL = "";
     let cvURL = "";
@@ -133,7 +127,6 @@ export function AuthProvider({ children }) {
     return userData;
   };
 
-  // ✏️ UPDATE
   const updateUser = async (id, newData) => {
     if (!id) return;
     const refDoc = doc(db, "usuariosbcp", id);
@@ -157,13 +150,11 @@ export function AuthProvider({ children }) {
     setUser((prev) => ({ ...prev, ...dataToSave }));
   };
 
-  // 🔴 LOGOUT
   const logout = () => {
     localStorage.removeItem(SESSION_KEY);
     setUser(null);
   };
 
-  // Mantenido por compatibilidad con código existente
   const fetchUserFromDB = async (email) => {
     const q = query(collection(db, "usuariosbcp"), where("correo", "==", email));
     const snapshot = await getDocs(q);

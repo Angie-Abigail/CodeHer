@@ -22,7 +22,6 @@ export default function Navbar() {
       <div className="fixed top-0 left-0 w-full z-50 shadow-md border-b border-white/10 bg-[#002A80]">
         <div className="w-full px-6 md:px-16 lg:px-24 py-3 flex justify-between items-center">
 
-          {/* LEFT */}
           <div className="flex items-center gap-6">
             <Link
               to="/"
@@ -31,7 +30,6 @@ export default function Navbar() {
               <img src={logo} alt=""  className="h-8 md:h-10 lg:h-12 w-auto object-contain"/>
             </Link>
 
-            {/* DESKTOP NAV */}
             <nav className="hidden md:flex items-center gap-2">
               <Link
                 to="/"
@@ -59,9 +57,7 @@ export default function Navbar() {
             </nav>
           </div>
 
-          {/* RIGHT */}
           <div className="flex items-center gap-3">
-            {/* USER / LOGIN */}
             <div className="hidden md:block">
               {user ? (
                 <UserMenu user={user} />
@@ -75,7 +71,6 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* MOBILE BUTTON */}
             <button
               className="md:hidden text-white"
               onClick={() => setOpen(!open)}
@@ -85,7 +80,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* MOBILE MENU */}
         {open && (
           <div className="md:hidden px-6 pb-4 pt-2 space-y-2  bg-[#002A80] border-t border-white/10">
             <Link
@@ -133,7 +127,6 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* MODALES */}
       {modal === "login" && (
         <Login
           onClose={() => setModal(null)}

@@ -23,7 +23,6 @@ export default function DashboardNav({ section, setSection }) {
       "
     >
 <br />
-      {/* USER */}
       <div className="flex items-center gap-3 px-2 sm:px-3 mb-5 sm:mb-6">
         {user?.foto ? (
           <img
@@ -46,7 +45,6 @@ export default function DashboardNav({ section, setSection }) {
         </div>
       </div>
 
-      {/* MENU */}
       <div className="bg-white rounded-xl sm:rounded-2xl p-1 sm:p-2 shadow-sm">
 
         {menu.map(({ id, label, icon: Icon }) => {
@@ -81,7 +79,6 @@ export default function DashboardNav({ section, setSection }) {
             </button>
           );
         })}
-
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-// components/Pagination.jsx
 import React from "react";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -8,7 +7,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
   return (
     <div className="flex items-center justify-center gap-2 mt-10">
-      {/* Prev */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -33,7 +31,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         </button>
       ))}
 
-      {/* Next */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

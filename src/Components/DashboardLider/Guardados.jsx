@@ -44,7 +44,6 @@ export default function Guardados() {
 
   return (
     <>
-      {/* MODAL */}
       <VerPracticante
         open={open}
         onClose={() => setOpen(false)}
@@ -53,7 +52,6 @@ export default function Guardados() {
 
       <div className="p-4 sm:p-6 lg:p-8 mt-4 sm:mt-6">
 
-        {/* HEADER */}
         <div className="mb-5 sm:mb-6">
           <h2 className="text-xl sm:text-2xl font-bold text-[#003087]">
             Perfiles guardados
@@ -63,7 +61,6 @@ export default function Guardados() {
           </p>
         </div>
 
-        {/* EMPTY STATE */}
         {guardados.length === 0 ? (
           <div className="text-gray-400 text-sm">
             No tienes perfiles guardados
@@ -103,7 +100,6 @@ export default function Guardados() {
                     "
                   />
 
-                  {/* INFO */}
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-[#003087] text-sm sm:text-base truncate">
                       {g.nombre}
@@ -114,7 +110,6 @@ export default function Guardados() {
                     </p>
                   </div>
 
-                  {/* INDICADOR */}
                   <div className="w-2 h-2 rounded-full bg-[#FF6B00]" />
                 </div>
 

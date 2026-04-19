@@ -1,4 +1,3 @@
-// components/SearchBar.jsx
 import React from "react";
 
 const SearchBar = ({
@@ -8,7 +7,6 @@ const SearchBar = ({
 }) => {
   return (
     <div className="relative w-full">
-      {/* Icono búsqueda */}
       <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none">
         <svg
           className="w-4 h-4 text-[#003087]/40"
@@ -49,7 +47,6 @@ const SearchBar = ({
         "
       />
 
-      {/* Clear button */}
       {value && (
         <button
           onClick={() => onChange("")}

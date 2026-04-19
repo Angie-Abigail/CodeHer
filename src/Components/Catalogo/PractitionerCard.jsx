@@ -69,29 +69,23 @@ const PractitionerCard = ({ practicante }) => {
         id={practicante.id}
       />
 
-      {/* ── Contenedor con altura fija en desktop, auto en mobile ── */}
       <div
         className="w-full"
         style={{ perspective: "1400px" }}
       >
-        {/* ── FLIP WRAPPER ── */}
         <div
           className="relative w-full"
           style={{
             transformStyle: "preserve-3d",
             transition: "transform 0.65s cubic-bezier(0.4,0,0.2,1)",
             transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            /* altura fija en md+, automática en mobile */
             height: "460px",
           }}
-          /* Desktop: hover */
           onMouseEnter={() => setFlipped(true)}
           onMouseLeave={() => setFlipped(false)}
-          /* Mobile: tap */
           onClick={() => setFlipped((f) => !f)}
         >
 
-          {/* ══════════════ FRONT ══════════════ */}
           <div
             className="absolute inset-0 bg-white rounded-2xl shadow-md flex flex-col overflow-hidden"
             style={{
@@ -100,14 +94,12 @@ const PractitionerCard = ({ practicante }) => {
               zIndex: 2,
             }}
           >
-            {/* Foto de portada */}
             <div className="h-[150px] sm:h-[170px] relative shrink-0">
               <img
                 src={practicante.foto}
                 className="w-full h-full object-cover"
                 alt=""
               />
-              {/* Avatar */}
               <div className="absolute -bottom-8 left-4 sm:left-5">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden shadow-md bg-white">
                   <img src={practicante.foto} className="w-full h-full object-cover" alt="" />
@@ -143,14 +135,12 @@ const PractitionerCard = ({ practicante }) => {
                 ))}
               </div>
 
-              {/* Hint en mobile */}
               <p className="mt-auto pt-3 text-[11px] text-gray-300 text-center md:hidden">
                 Toca para ver más
               </p>
             </div>
           </div>
 
-          {/* ══════════════ BACK ══════════════ */}
           <div
             className="absolute inset-0 bg-white rounded-2xl shadow-md flex flex-col overflow-hidden"
             style={{
@@ -160,7 +150,6 @@ const PractitionerCard = ({ practicante }) => {
               zIndex: 1,
             }}
           >
-            {/* Mini header */}
             <div className="p-4 flex items-center gap-3 border-b border-gray-100 shrink-0">
               <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 shrink-0">
                 <img src={practicante.foto} className="w-full h-full object-cover" alt="" />
@@ -173,7 +162,6 @@ const PractitionerCard = ({ practicante }) => {
               </div>
             </div>
 
-            {/* Body */}
             <div className="p-4 flex-1 overflow-y-auto space-y-3">
 
               <div className="grid grid-cols-2 gap-3 text-sm">
@@ -222,7 +210,6 @@ const PractitionerCard = ({ practicante }) => {
 
             </div>
 
-            {/* Footer CTA */}
             <div className="p-3 sm:p-4 flex gap-2 border-t border-gray-100 bg-white shrink-0">
               <button
                 onClick={(e) => { e.stopPropagation(); setOpenProfile(true); }}

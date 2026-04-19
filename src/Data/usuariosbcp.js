@@ -176,12 +176,9 @@ const subirUsuarios = async () => {
 
   for (const usuario of usuariosbcp) {
     try {
-      // Si quieres convertir la fecha a Timestamp de Firebase, 
-      // usamos Timestamp.fromDate si el string es convertible, 
-      // de lo contrario, Firestore guardará el string tal cual.
       const docData = {
         ...usuario,
-        fechaRegistro: Timestamp.now() // Esto crea una marca de tiempo actual exacta
+        fechaRegistro: Timestamp.now()
       };
 
       const docRef = await addDoc(colRef, docData);
@@ -192,5 +189,4 @@ const subirUsuarios = async () => {
   }
 };
 
-// Llama a esta función cuando necesites subir los datos
 subirUsuarios();

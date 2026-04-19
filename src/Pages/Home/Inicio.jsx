@@ -7,7 +7,6 @@ const O = "#FF5000";
 const BLUE = "#002A80";
 const LIGHT_BLUE = "#0041CC";
 
-/* ─── Animated counter hook ─── */
 function useCountUp(target, duration = 1800, start = false) {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -30,7 +29,6 @@ function useCountUp(target, duration = 1800, start = false) {
   return display + suffix;
 }
 
-/* ─── Stat card with animated number ─── */
 function StatCard({ value, label, delay, visible }) {
   const animated = useCountUp(value, 1600, visible);
   return (
@@ -44,7 +42,6 @@ function StatCard({ value, label, delay, visible }) {
   );
 }
 
-/* ─── Typewriter effect ─── */
 function Typewriter({ texts, speed = 80 }) {
   const [index, setIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
@@ -76,7 +73,6 @@ function Typewriter({ texts, speed = 80 }) {
   );
 }
 
-/* ─── Benefit card ─── */
 function BenefitCard({ icon, title, desc, index }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -94,7 +90,6 @@ function BenefitCard({ icon, title, desc, index }) {
   );
 }
 
-/* ─── Process step ─── */
 function ProcessStep({ number, title, desc, active, onClick }) {
   return (
     <button className={`process-step ${active ? "active" : ""}`} onClick={onClick}>
@@ -107,7 +102,6 @@ function ProcessStep({ number, title, desc, active, onClick }) {
   );
 }
 
-/* ─── Testimonial ─── */
 function TestimonialCard({ name, role, text, avatar, active }) {
   return (
     <div className={`testimonial-card ${active ? "active" : ""}`}>
@@ -124,9 +118,6 @@ function TestimonialCard({ name, role, text, avatar, active }) {
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   MAIN COMPONENT
-══════════════════════════════════════════════════════════════ */
 export default function Inicio() {
   const [active, setActive] = useState(0);
   const [showLogin, setShowLogin] = useState(false);
@@ -137,19 +128,16 @@ export default function Inicio() {
   const statsRef = useRef(null);
   const heroRef = useRef(null);
 
-  /* Auto-slide gallery */
   useEffect(() => {
     const iv = setInterval(() => setActive((a) => (a + 1) % gallery.length), 4000);
     return () => clearInterval(iv);
   }, []);
 
-  /* Auto-slide testimonials */
   useEffect(() => {
     const iv = setInterval(() => setActiveTestimonial((a) => (a + 1) % testimonials.length), 5000);
     return () => clearInterval(iv);
   }, []);
 
-  /* IntersectionObserver for stats */
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
@@ -159,7 +147,6 @@ export default function Inicio() {
     return () => observer.disconnect();
   }, []);
 
-  /* Parallax scroll */
   useEffect(() => {
     const handler = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handler, { passive: true });
@@ -206,11 +193,9 @@ export default function Inicio() {
   return (
     <div className="bcp-root">
       <style>{`
-        /* ── GLOBALS ── */
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
         .bcp-root { min-height:100vh; background:#fff; color:${BLUE}; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
 
-        /* ── HERO BG ── */
         .hero-bg {
           position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0;
         }
@@ -226,7 +211,6 @@ export default function Inicio() {
           50%{transform:translateY(-30px) scale(1.05);}
         }
 
-        /* ── HERO SECTION ── */
         .hero-section {
           position:relative; padding-top:clamp(80px,10vw,140px);
           padding-left:clamp(16px,6vw,96px); padding-right:clamp(16px,6vw,96px);
@@ -235,7 +219,6 @@ export default function Inicio() {
         .hero-grid { display:grid; grid-template-columns:1fr; gap:40px; align-items:center; }
         @media(min-width:1024px){ .hero-grid{ grid-template-columns:1fr 1fr; gap:56px; } }
 
-        /* ── BADGE ── */
         .hero-badge {
           display:inline-flex; align-items:center; gap:8px;
           font-size:11px; font-weight:700; letter-spacing:1.5px;
@@ -250,7 +233,6 @@ export default function Inicio() {
         @keyframes fadeDown { from{opacity:0;transform:translateY(-16px);} to{opacity:1;transform:translateY(0);} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
 
-        /* ── HEADLINE ── */
         .hero-title {
           font-family:'Sora',sans-serif;
           font-size:clamp(2rem,5vw,4rem);
@@ -261,14 +243,12 @@ export default function Inicio() {
         .cursor-blink { animation:blink 0.8s step-end infinite; }
         @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
 
-        /* ── SUBTITLE ── */
         .hero-subtitle {
           color:#4A5568; margin-top:20px; max-width:520px;
           font-size:clamp(0.875rem,1.5vw,1rem); line-height:1.8;
           animation: fadeUp 0.7s 0.25s ease both;
         }
 
-        /* ── BUTTONS ── */
         .btn-row { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; animation: fadeUp 0.7s 0.35s ease both; }
         .btn-primary {
           padding:14px 28px; border-radius:12px; font-weight:700;
@@ -292,7 +272,6 @@ export default function Inicio() {
         }
         .btn-secondary:hover { background:${BLUE}; color:#fff; transform:translateY(-2px); }
 
-        /* ── STATS ── */
         .stats-grid {
           display:grid; grid-template-columns:repeat(2,1fr);
           gap:12px; margin-top:36px;
@@ -309,7 +288,6 @@ export default function Inicio() {
         .stat-value { font-family:'Sora',sans-serif; font-size:clamp(1.2rem,2.5vw,1.5rem); font-weight:800; color:${O}; }
         .stat-label { font-size:11px; color:#718096; margin-top:4px; }
 
-        /* ── GALLERY ── */
         .gallery-wrap { position:relative; animation: fadeUp 0.7s 0.2s ease both; }
         .gallery-main {
           border-radius:20px; overflow:hidden;
@@ -351,7 +329,6 @@ export default function Inicio() {
         }
         .progress-dot.is-active { background:${O}; width:24px !important; }
 
-        /* ── FLOATING CARD ── */
         .float-card {
           position:absolute; background:#fff;
           border-radius:14px; padding:12px 16px;
@@ -372,11 +349,9 @@ export default function Inicio() {
         .float-text { font-size:11px; font-weight:600; color:${BLUE}; font-family:'Sora',sans-serif; }
         .float-sub { font-size:10px; color:#718096; }
 
-        /* ── DIVIDER WAVE ── */
         .wave-divider { width:100%; overflow:hidden; line-height:0; }
         .wave-divider svg { display:block; width:100%; }
 
-        /* ── BENEFITS SECTION ── */
         .section { padding:clamp(48px,8vw,96px) clamp(16px,6vw,96px); }
         .section-tag {
           display:inline-block; font-size:11px; font-weight:700;
@@ -412,7 +387,6 @@ export default function Inicio() {
         .benefit-desc { font-size:13px; color:#718096; margin-top:8px; line-height:1.7; }
         .benefit-bar { display:none; }
 
-        /* ── PROCESS SECTION ── */
         .process-section {
           background:linear-gradient(135deg,${BLUE} 0%,${LIGHT_BLUE} 100%);
           padding:clamp(48px,8vw,96px) clamp(16px,6vw,96px);
@@ -483,7 +457,6 @@ export default function Inicio() {
         }
         .circle-label { font-size:12px; color:rgba(255,255,255,0.7); text-align:center; margin-top:8px; }
 
-        /* ── TESTIMONIALS ── */
         .testimonials-section {
           background:#F7F9FC;
           padding:clamp(48px,8vw,96px) clamp(16px,6vw,96px);
@@ -518,7 +491,6 @@ export default function Inicio() {
         .author-name { font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:${BLUE}; }
         .author-role { font-size:11px; color:#718096; margin-top:2px; }
 
-        /* ── CTA BAND ── */
         .cta-band {
           background:${O};
           padding:clamp(32px,5vw,56px) clamp(16px,6vw,96px);
@@ -552,12 +524,10 @@ export default function Inicio() {
         }
         .btn-white:hover { transform:translateY(-2px) scale(1.03); box-shadow:0 8px 30px rgba(0,0,0,0.2); }
 
-        /* ── PORQUE BCP ── */
         #porque-bcp {
           scroll-margin-top:80px;
         }
 
-        /* ── SCROLL FADE IN ── */
         .reveal {
           opacity:0; transform:translateY(24px);
           transition:opacity 0.6s ease, transform 0.6s ease;
@@ -567,7 +537,6 @@ export default function Inicio() {
 
       <Navbar />
 
-      {/* ════ HERO ════ */}
       <section className="hero-section" ref={heroRef}>
         <div className="hero-bg">
           <div className="hero-blob blob1" />
@@ -577,7 +546,6 @@ export default function Inicio() {
 
         <div className="hero-grid" style={{ position: "relative", zIndex: 1 }}>
 
-          {/* LEFT */}
           <div>
             <div className="hero-badge">
               <span className="badge-dot" />
@@ -607,7 +575,6 @@ export default function Inicio() {
               </button>
             </div>
 
-            {/* STATS */}
             <div className="stats-grid" ref={statsRef}>
               {stats.map((s, i) => (
                 <StatCard key={i} value={s.value} label={s.label} delay={i * 80} visible={statsVisible} />
@@ -615,7 +582,6 @@ export default function Inicio() {
             </div>
           </div>
 
-          {/* RIGHT – Gallery */}
           <div className="gallery-wrap">
 
             <div className="gallery-main">
@@ -653,14 +619,12 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* ════ WAVE ════ */}
       <div className="wave-divider">
         <svg viewBox="0 0 1440 60" preserveAspectRatio="none" style={{ height: 60 }}>
           <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#F7F9FC" />
         </svg>
       </div>
 
-      {/* ════ BENEFITS ════ */}
       <section id="porque-bcp" className="section testimonials-section">
         <div>
           <div className="section-tag">¿Por qué elegir BCP?</div>
@@ -675,7 +639,6 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* ════ PROCESS ════ */}
       <section className="process-section">
         <div className="process-inner">
           <div>
@@ -711,7 +674,6 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* ════ TESTIMONIALS ════ */}
       <section className="section testimonials-section">
         <div className="section-tag">Lo que dicen nuestros practicantes</div>
         <h2 className="section-title">Historias reales de crecimiento</h2>
@@ -720,7 +682,6 @@ export default function Inicio() {
             <TestimonialCard key={i} {...t} active={activeTestimonial === i} />
           ))}
         </div>
-        {/* Dot navigation */}
         <div style={{ display: "flex", gap: 8, marginTop: 28, justifyContent: "center" }}>
           {testimonials.map((_, i) => (
             <button
@@ -738,7 +699,6 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* ════ CTA BAND ════ */}
       <div className="cta-band">
         <div>
           <div className="cta-title">¿Listo para marcar la diferencia?</div>

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 const BLUE = "#002A80";
 
-/* ───────── FILTER SECTION ───────── */
 const FilterSection = ({ title, items = [], selected = [], onToggle }) => {
   const [open, setOpen] = useState(true);
 
@@ -55,7 +54,6 @@ const FilterSection = ({ title, items = [], selected = [], onToggle }) => {
   );
 };
 
-/* ───────── FILTER CONTENT ───────── */
 const FilterContent = ({
   areas = [], carreras = [], disponibilidad = [],
   selectedAreas = [], selectedCarreras = [], selectedDisponibilidad = [],
@@ -88,7 +86,6 @@ const FilterContent = ({
           )}
         </div>
 
-        {/* Active filters count badge */}
         {totalFiltros > 0 && (
           <div className="mt-2 flex gap-1 flex-wrap">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-medium">
@@ -98,12 +95,10 @@ const FilterContent = ({
         )}
       </div>
 
-      {/* BODY — scrollable */}
       <div className="px-3 pb-3 overflow-y-auto flex-1">
         <FilterSection title="Áreas" items={areas} selected={selectedAreas} onToggle={onToggleArea} />
         <FilterSection title="Carreras" items={carreras} selected={selectedCarreras} onToggle={onToggleCarrera} />
 
-        {/* DISPONIBILIDAD */}
         <div className="py-3">
           <button
             onClick={() => setDispOpen(!dispOpen)}
@@ -158,7 +153,6 @@ const FilterContent = ({
   );
 };
 
-/* ───────── FILTER PANEL ───────── */
 const FilterPanel = ({
   areas, carreras, disponibilidad,
   selectedAreas, selectedCarreras, selectedDisponibilidad,
@@ -181,7 +175,6 @@ const FilterPanel = ({
 
   return (
     <>
-      {/* ── MOBILE TRIGGER ── */}
       <div className="md:hidden mb-3">
         <button
           onClick={() => setOpenMobile(true)}
@@ -202,16 +195,13 @@ const FilterPanel = ({
         </button>
       </div>
 
-      {/* ── MOBILE DRAWER ── */}
       {openMobile && (
         <div className="fixed inset-0 z-50 md:hidden flex">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setOpenMobile(false)}
           />
 
-          {/* Drawer panel */}
           <div
             className="relative ml-auto w-[85%] max-w-xs h-full bg-white shadow-2xl flex flex-col"
             style={{ animation: "slideIn 0.22s ease-out" }}
@@ -225,7 +215,6 @@ const FilterPanel = ({
         </div>
       )}
 
-      {/* ── DESKTOP SIDEBAR ── */}
       <aside className="hidden md:flex flex-col w-56 lg:w-60 shrink-0">
         <FilterContent {...sharedProps} />
       </aside>

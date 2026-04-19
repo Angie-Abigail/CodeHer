@@ -41,7 +41,6 @@ export default function Login({ onClose, irARegistro }) {
         onClick={(e) => e.stopPropagation()}
       >
 
-        {/* CLOSE */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -49,7 +48,6 @@ export default function Login({ onClose, irARegistro }) {
           ✕
         </button>
 
-        {/* LOGO */}
         <div className="bg-[#002A80] -mx-8 -mt-8 mb-4 p-1 rounded-t-2xl flex justify-center">
           <img src={logo} alt="logo" className="h-10 w-auto object-contain" />
         </div>
@@ -62,10 +60,8 @@ export default function Login({ onClose, irARegistro }) {
           Bienvenido de nuevo. Ingresa para continuar.
         </p>
 
-        {/* INPUTS */}
         <div className="space-y-4">
 
-          {/* EMAIL */}
           <div>
             <label className="text-sm text-gray-700 font-medium">
               Correo electrónico
@@ -84,7 +80,6 @@ export default function Login({ onClose, irARegistro }) {
             </div>
           </div>
 
-          {/* PASSWORD */}
           <div>
             <label className="text-sm text-gray-700 font-medium">
               Contraseña
@@ -112,12 +107,10 @@ export default function Login({ onClose, irARegistro }) {
 
         </div>
 
-        {/* ERROR */}
         {error && (
           <p className="text-red-500 text-sm mt-3">{error}</p>
         )}
 
-        {/* LOGIN BUTTON */}
         <button
           onClick={handleLogin}
           className="w-full bg-orange-500 text-white py-2 rounded-lg mt-6 hover:bg-orange-400 transition"
@@ -125,7 +118,6 @@ export default function Login({ onClose, irARegistro }) {
           Iniciar sesión
         </button>
 
-        {/* REGISTER */}
         <p className="text-center text-sm mt-4 text-gray-600">
           ¿No tienes cuenta?{" "}
           <span

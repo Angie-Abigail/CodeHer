@@ -82,7 +82,6 @@ export default function Registro({ onClose, irALogin }) {
     onClose();
   }
 
-  // 👇 redirección opcional
   navigate("/dashboard");
 };
   return (
@@ -95,7 +94,6 @@ export default function Registro({ onClose, irALogin }) {
       onClick={(e) => e.stopPropagation()}
     >
 
-      {/* HEADER */}
       <div className="p-6 border-b border-blue-100">
   <div className="flex items-center justify-between mb-3">
     <button
@@ -121,13 +119,10 @@ export default function Registro({ onClose, irALogin }) {
   </div>
 </div>
 
-      {/* CONTENIDO */}
       <div className="flex-1 overflow-y-auto p-8 space-y-10">
 
-        {/* DATOS PERSONALES */}
         <div className="grid md:grid-cols-2 gap-8 pb-6 border-b border-blue-100">
           
-          {/* FOTO */}
           <div className="flex flex-col items-center gap-3">
             <div className="relative w-28 h-28 rounded-2xl bg-white border border-blue-200 flex items-center justify-center overflow-hidden">
               {preview ? (
@@ -140,7 +135,6 @@ export default function Registro({ onClose, irALogin }) {
             <p className="text-xs text-gray-600">Foto de perfil</p>
           </div>
 
-          {/* INPUTS */}
           <div className="space-y-4">
             <div className="relative">
               <User className="absolute left-3 top-3 text-gray-400" size={18} />
@@ -159,7 +153,6 @@ export default function Registro({ onClose, irALogin }) {
           </div>
         </div>
 
-        {/* ACADÉMICO */}
         <div className="pb-6 border-b border-blue-100 space-y-5">
           <h3 className="font-bold text-blue-900">Información académica</h3>
 
@@ -213,7 +206,6 @@ export default function Registro({ onClose, irALogin }) {
           </div>
         </div>
 
-        {/* SOBRE TI */}
         <div className="pb-6 border-b border-blue-100 space-y-4">
           <h3 className="font-bold text-blue-900">Sobre ti</h3>
 
@@ -232,7 +224,6 @@ export default function Registro({ onClose, irALogin }) {
           />
         </div>
 
-        {/* PERFIL PROFESIONAL */}
         <div className="space-y-6 pb-6 border-b border-blue-100">
           <h3 className="font-bold text-blue-900">Perfil profesional</h3>
 
@@ -265,7 +256,6 @@ export default function Registro({ onClose, irALogin }) {
 
       </div>
 
-      {/* FOOTER */}
       <div className="p-6 border-t border-blue-100 flex justify-center">
         <button
           onClick={ejecutarRegistro}

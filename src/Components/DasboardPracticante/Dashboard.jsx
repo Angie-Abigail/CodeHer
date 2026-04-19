@@ -17,12 +17,10 @@ export default function Dashboard() {
 
       <div className="flex min-h-screen  pt-16">
 
-        {/* SIDEBAR DESKTOP */}
         <div className="hidden md:block">
           <DashboardNav section={section} setSection={setSection} />
         </div>
 
-        {/* MOBILE MENU BUTTON */}
         <button
           onClick={() => setOpen(true)}
           className="md:hidden fixed top-20 left-4 z-50 bg-blue-950 text-white p-2 rounded-lg shadow"
@@ -30,17 +28,12 @@ export default function Dashboard() {
           <Menu size={20} />
         </button>
 
-        {/* MOBILE OVERLAY */}
         {open && (
           <div className="fixed inset-0 z-50 flex">
-
-            {/* BACKDROP */}
             <div
               className="absolute inset-0 bg-black/40"
               onClick={closeMenu}
             />
-
-            {/* SIDEBAR MOBILE */}
             <div className="relative w-64 bg-white h-full shadow-lg z-50">
               <div className="flex justify-between items-center p-4 border-b">
                 <span className="font-semibold text-blue-950">
@@ -62,8 +55,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
-        {/* CONTENT */}
         <div className="flex-1 w-full">
           <DashboardContent section={section} />
         </div>

@@ -268,8 +268,8 @@ export default function Perfil() {
                 <div className="relative">
                   <div className="relative">
                     <label className="absolute left-0 top-0 text-sm text-gray-500 pointer-events-none">
-    Área
-  </label>
+                      Área
+                    </label>
                     <select
                       value={form.areaId}
                       onChange={(e) => {
@@ -300,8 +300,8 @@ export default function Perfil() {
                 <div className="relative">
                   <div className="relative">
                     <label className="absolute left-0 top-0 text-sm text-gray-500 pointer-events-none">
-Carrera
-  </label>
+                      Carrera
+                    </label>
                     <select
                       value={form.carreraId}
                       onChange={(e) => {
@@ -332,8 +332,8 @@ Carrera
                 <div className="relative">
                   <div className="relative">
                     <label className="absolute left-0 top-0 text-sm text-gray-500 pointer-events-none">
-    Disponibilidad
-  </label>
+                      Disponibilidad
+                    </label>
                     <select
                       value={form.disponibilidadId}
                       onChange={(e) => {
@@ -366,14 +366,12 @@ Carrera
           </div>
         </div>
 
-        {/* ── Card 2: Links ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
           <div className="p-8">
             <SectionTitle icon="🔗" title="Presencia Digital" subtitle="Perfiles y documentos profesionales" />
 
             <div className="grid sm:grid-cols-3 gap-6">
-              {/* LinkedIn */}
               <div className="relative group">
                 <div
                   className="flex items-center gap-3 border-2 rounded-xl px-4 py-3.5 transition-all duration-200"
@@ -400,7 +398,6 @@ Carrera
                 </div>
               </div>
 
-              {/* GitHub */}
               <div className="relative group">
                 <div
                   className="flex items-center gap-3 border-2 rounded-xl px-4 py-3.5 transition-all duration-200"
@@ -427,7 +424,6 @@ Carrera
           </div>
         </div>
 
-        {/* ── Card 3: Perfil Profesional ── */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
           <div className="p-8">
@@ -435,13 +431,10 @@ Carrera
 
             <div className="space-y-8">
 
-              {/* TEXTAREAS FULL WIDTH */}
               <ListaTag tipo="descripcion" config={listaConfig.descripcion} items={listas.descripcion} setListas={setListas} />
               <ListaTag tipo="motivaciones" config={listaConfig.motivaciones} items={listas.motivaciones} setListas={setListas} />
               <ListaTag tipo="experiencia" config={listaConfig.experiencia} items={listas.experiencia} setListas={setListas} />
 
-
-              {/* TAGS EN MITAD */}
               <div className="grid sm:grid-cols-2 gap-6">
                 <ListaTag tipo="cursos" config={listaConfig.cursos} items={listas.cursos} setListas={setListas} />
                 <ListaTag tipo="capacitaciones" config={listaConfig.capacitaciones} items={listas.capacitaciones} setListas={setListas} />
@@ -451,7 +444,6 @@ Carrera
           </div>
         </div>
 
-        {/* ── Save Button ── */}
         <div className="flex items-center justify-between pb-6">
           <p className="text-xs text-gray-400">
             Los cambios se guardan en tu perfil de candidato
@@ -475,7 +467,6 @@ Carrera
   );
 }
 
-/* ─── Lista Tag Component ─── */
 function ListaTag({ tipo, config, items, setListas }) {
   const [value, setValue] = useState("");
   const isTextarea = ["experiencia", "motivaciones", "descripcion"].includes(tipo);
@@ -483,12 +474,10 @@ function ListaTag({ tipo, config, items, setListas }) {
   return (
     <div className="w-full">
 
-      {/* LABEL */}
       <label className="block text-sm text-gray-500 mb-2">
         {config.label}
       </label>
 
-      {/* TEXTAREA */}
       {isTextarea && (
         <textarea
           rows={5}
@@ -501,10 +490,8 @@ function ListaTag({ tipo, config, items, setListas }) {
         />
       )}
 
-      {/* TAGS */}
       {!isTextarea && (
         <>
-          {/* LISTA DE TAGS */}
           {items.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {items.map((item) => (
@@ -533,7 +520,6 @@ function ListaTag({ tipo, config, items, setListas }) {
             </div>
           )}
 
-          {/* INPUT + BOTÓN */}
           <div className="flex gap-2">
             <input
               value={value}

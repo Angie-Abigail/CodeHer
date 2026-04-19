@@ -14,12 +14,10 @@ export default function DashboardLider() {
       <Navbar />
 
       <div className="flex pt-16 min-h-screen  relative z-0">
-        {/* SIDEBAR DESKTOP */}
         <div className="hidden md:block pt-16">
   <DashboardNavLider section={section} setSection={setSection} />
 </div>
 
-        {/* BOTÓN MOBILE */}
         <button
           onClick={() => setOpenMenu(true)}
           className="md:hidden fixed top-20 left-4 z-50 bg-white p-2 rounded-lg shadow"
@@ -27,7 +25,6 @@ export default function DashboardLider() {
           <Menu size={20} />
         </button>
 
-        {/* DRAWER MOBILE */}
         {openMenu && (
           <div className="absolute left-0 top-16 h-[calc(100%-64px)] w-72 bg-[#F4F6FB] shadow-lg">
             <div
@@ -47,7 +44,6 @@ export default function DashboardLider() {
           </div>
         )}
 
-        {/* CONTENT */}
         <div className="flex-1 h-[calc(100vh-64px)] overflow-y-auto">
           <DashboardContentLider section={section} />
         </div>
