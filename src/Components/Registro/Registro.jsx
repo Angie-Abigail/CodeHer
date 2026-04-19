@@ -91,33 +91,35 @@ export default function Registro({ onClose, irALogin }) {
     onClick={onClose}
   >
     <div
-      className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl flex flex-col h-[90vh] overflow-hidden"
+      className="bg-white w-[92%] max-w-4xl rounded-3xl shadow-2xl flex flex-col h-[90vh] overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
 
       {/* HEADER */}
-      <div className="relative p-6 text-center border-b border-blue-100">
-        <button
-          onClick={irALogin}
-          className="absolute left-4 top-4 text-blue-900 font-bold"
-        >
-          ← Regresar
-        </button>
-
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 text-blue-900"
-        >
-          <X />
-        </button>
-
-        <h2 className="text-xl font-bold text-blue-900">
-          Registro de Talento BCP
-        </h2>
-        <p className="text-sm text-gray-500">
-          Completa tu perfil profesional
-        </p>
-      </div>
+      <div className="p-6 border-b border-blue-100">
+  <div className="flex items-center justify-between mb-3">
+    <button
+      onClick={irALogin}
+      className="text-blue-900 font-bold text-sm"
+    >
+      ← Regresar
+    </button>
+    <button
+      onClick={onClose}
+      className="text-blue-900"
+    >
+      <X />
+    </button>
+  </div>
+  <div className="text-center">
+    <h2 className="text-xl font-bold text-blue-900">
+      Registro de Talento BCP
+    </h2>
+    <p className="text-sm text-gray-500">
+      Completa tu perfil profesional
+    </p>
+  </div>
+</div>
 
       {/* CONTENIDO */}
       <div className="flex-1 overflow-y-auto p-8 space-y-10">

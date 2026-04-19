@@ -3,6 +3,7 @@ import DashboardContentLider from "./DashboardContentLider.jsx";
 import DashboardNavLider from "./DashboardNavLider.jsx";
 import Navbar from "../Navbar/Navbar.jsx";
 import { Menu } from "lucide-react";
+import Footer from "../Footer/Footer.jsx"
 
 export default function DashboardLider() {
   const [section, setSection] = useState("mensajes");
@@ -12,7 +13,7 @@ export default function DashboardLider() {
     <>
       <Navbar />
 
-      <div className="flex pt-16 min-h-screen bg-gray-100 relative z-0">
+      <div className="flex pt-16 min-h-screen  relative z-0">
         {/* SIDEBAR DESKTOP */}
         <div className="hidden md:block pt-16">
   <DashboardNavLider section={section} setSection={setSection} />
@@ -52,6 +53,7 @@ export default function DashboardLider() {
         </div>
 
       </div>
+      <Footer/>
     </>
   );
 }

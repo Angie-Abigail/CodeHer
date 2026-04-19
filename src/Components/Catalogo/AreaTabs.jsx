@@ -12,9 +12,11 @@ const AreaTabs = ({ areas = [], selectedArea, onSelectArea }) => {
   return (
     <div
       className="
+        hidden md:flex
         w-full
+        min-w-0
         overflow-x-auto
-        flex gap-2
+        gap-2
         pb-2
         scrollbar-hide
       "

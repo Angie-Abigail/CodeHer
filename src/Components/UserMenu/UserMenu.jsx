@@ -3,8 +3,8 @@ import { User, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 
-const B = "#003087";
-const O = "#F47920";
+const B = "#002A80";
+const O = "#FF5000";
 
 export default function UserMenu({ user }) {
   const [open, setOpen] = useState(false);
@@ -79,16 +79,18 @@ export default function UserMenu({ user }) {
 
       {/* DROPDOWN (MÁS GRANDE) */}
       <div
-        className={`absolute right-0 mt-3 w-64
-        bg-white shadow-xl border border-gray-100
-        transition-all duration-200 origin-top-right
-        rounded-xl overflow-hidden
-        ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
-      `}
-      >
+  className={`absolute mt-3 w-[90vw] max-w-64
+  bg-white shadow-xl border border-gray-100
+  transition-all duration-200 origin-top
+  rounded-xs overflow-hidden
+  left-1/3 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0
+
+  ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
+`}
+>
 
         {/* HEADER */}
-        <div className="px-5 py-4 border-b border-gray-100">
+        <div className="px-5 py-4  ">
           <p className="text-base font-semibold text-gray-800 truncate">
             {user?.nombre}
           </p>

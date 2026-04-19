@@ -3,6 +3,7 @@ import DashboardContent from "./DashboardContent";
 import DashboardNav from "./DashboardNav.jsx";
 import Navbar from "../Navbar/Navbar";
 import { Menu, X } from "lucide-react";
+import Footer from "../Footer/Footer.jsx"
 
 export default function Dashboard() {
   const [section, setSection] = useState("perfil");
@@ -14,7 +15,7 @@ export default function Dashboard() {
     <>
       <Navbar />
 
-      <div className="flex min-h-screen bg-gray-100 pt-16">
+      <div className="flex min-h-screen  pt-16">
 
         {/* SIDEBAR DESKTOP */}
         <div className="hidden md:block">
@@ -68,6 +69,7 @@ export default function Dashboard() {
         </div>
 
       </div>
+      <Footer/>
     </>
   );
 }

@@ -84,10 +84,6 @@ export default function Mensajes() {
       }));
 
       setMensajes(data);
-
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
     });
 
     return () => unsub();
@@ -127,7 +123,7 @@ export default function Mensajes() {
   <div className="mt-6 mx-4 h-[calc(100vh-100px)] flex bg-white rounded-2xl overflow-hidden">
 
     {/* 🟦 SIDEBAR */}
-    <div className="w-80 bg-[#F7F8FA] flex flex-col">
+    <div className="w-80  flex flex-col">
 
       <div className="px-5 py-4 text-sm font-semibold text-gray-700">
         Mensajes

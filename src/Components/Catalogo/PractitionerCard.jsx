@@ -124,11 +124,11 @@ const PractitionerCard = ({ practicante }) => {
                 {practicante.carrera}
               </p>
 
-              <p className="text-sm text-gray-600 mt-1 truncate">
+              <p className="text-sm text-gray-900 mt-1 truncate">
                 {practicante.universidad || "—"}
               </p>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-900">
                 Ciclo: {practicante.ciclo || "—"}
               </p>
 
@@ -136,7 +136,7 @@ const PractitionerCard = ({ practicante }) => {
                 {cursos.map((c, i) => (
                   <span
                     key={i}
-                    className="text-xs px-2.5 py-1 bg-blue-50 rounded-md border border-blue-100 text-gray-700"
+                    className="text-xs px-2.5 py-1 bg-blue-50 rounded-md border border-blue-200 text-gray-900"
                   >
                     {c}
                   </span>
@@ -181,13 +181,13 @@ const PractitionerCard = ({ practicante }) => {
                   <p className="text-[11px] font-bold uppercase tracking-wide mb-0.5" style={{ color: BLUE }}>
                     Disponibilidad
                   </p>
-                  <p className="text-gray-700 text-sm">{practicante.disponibilidad || "—"}</p>
+                  <p className="text-gray-900 text-sm">{practicante.disponibilidad || "—"}</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wide mb-0.5" style={{ color: BLUE }}>
                     Ciclo
                   </p>
-                  <p className="text-gray-700 text-sm">{practicante.ciclo || "—"}</p>
+                  <p className="text-gray-900 text-sm">{practicante.ciclo || "—"}</p>
                 </div>
               </div>
 

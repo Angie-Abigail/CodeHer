@@ -1,21 +1,18 @@
 import { useAuth } from "../../Context/AuthContext";
 import { useEffect, useState, useRef } from "react";
 
-/* ─── BCP Brand Colors ─── */
-const BLUE = "#003087";
-const BLUE_MID = "#0052CC";
-const ORANGE = "#FF6B00";
+const BLUE = "#002A80";
+const BLUE_MID = "#002A76";
+const ORANGE = "#FF5000";
 const ORANGE_LIGHT = "#FFF3E8";
-
-/* ─── Reusable Components ─── */
 
 const SectionTitle = ({ title, subtitle }) => (
   <div className="mb-4">
-    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+    <h3 className=" text-s font-semibold text-gray-900 ">
       {title}
     </h3>
     {subtitle && (
-      <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
+      <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
     )}
     <div className="mt-3 border-b border-gray-200"></div>
   </div>
@@ -35,18 +32,15 @@ const FloatingInput = ({ label, name, value, onChange, type = "text", placeholde
         placeholder={focused ? placeholder || "" : ""}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className="peer w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 placeholder-gray-300 transition-all duration-200 outline-none"
+        className="peer w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-900 placeholder-gray-300 transition-all duration-200 outline-none"
         style={{
           borderColor: focused ? BLUE_MID : "#E2E8F0",
         }}
       />
       <label
-        className="absolute left-0 transition-all duration-200 pointer-events-none font-medium"
+        className="absolute left-0 transition-all text-sm text-gray-500 duration-200 pointer-events-none"
         style={{
           top: active ? "0px" : "20px",
-          fontSize: active ? "10px" : "13px",
-          color: focused ? BLUE_MID : "#94A3B8",
-          letterSpacing: active ? "0.05em" : "0",
         }}
       >
         {label}
@@ -74,7 +68,7 @@ const FloatingSelect = ({ label, name, value, onChange, options }) => {
         onChange={onChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className="peer w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 transition-all duration-200 outline-none appearance-none cursor-pointer"
+        className="peer w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-500 transition-all duration-200 outline-none appearance-none cursor-pointer"
         style={{ borderColor: focused ? BLUE_MID : "#E2E8F0" }}
       >
         <option value="" disabled />
@@ -83,17 +77,14 @@ const FloatingSelect = ({ label, name, value, onChange, options }) => {
         ))}
       </select>
       <label
-        className="absolute left-0 transition-all duration-200 pointer-events-none font-medium"
+        className="absolute left-0 transition-all duration-200 text-gray-500 pointer-events-none text-sm"
         style={{
           top: active ? "0px" : "20px",
-          fontSize: active ? "10px" : "13px",
-          color: focused ? BLUE_MID : "#94A3B8",
-          letterSpacing: active ? "0.05em" : "0",
         }}
       >
         {label}
       </label>
-      <div className="absolute right-0 bottom-3 text-gray-400 pointer-events-none">
+      <div className="absolute right-0 bottom-3 text-gray-500 pointer-events-none">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -109,8 +100,6 @@ const FloatingSelect = ({ label, name, value, onChange, options }) => {
   );
 };
 
-/* ─── MAIN ─── */
-
 export default function Perfil() {
   const { user, updateUser, getAreas, getCarreras, getDisponibilidad } = useAuth();
   const fileRef = useRef();
@@ -120,7 +109,7 @@ export default function Perfil() {
 
   const [form, setForm] = useState({
     nombre: "", correo: "", universidad: "", ciclo: "",
-    area: "", areaId: "", carrera: "", carreraId: "", disponibilidad: "", disponibilidadId:"", linkedin: "", github: "",
+    area: "", areaId: "", carrera: "", carreraId: "", disponibilidad: "", disponibilidadId: "", linkedin: "", github: "",
     foto: null,
   });
 
@@ -190,7 +179,6 @@ export default function Perfil() {
     setTimeout(() => setSaved(false), 2500);
   };
 
-  /* ─── Lista labels & icons ─── */
   const listaConfig = {
     experiencia: { label: "Experiencia laboral", placeholder: "Ej: Asistente en área de TI · 2023" },
     cursos: { label: "Cursos y certificaciones", placeholder: "Ej: Python · Coursera" },
@@ -266,18 +254,22 @@ export default function Perfil() {
 
               {/* ── Form Fields ── */}
               <div className="flex-1 grid sm:grid-cols-2 gap-x-8 gap-y-6">
-                <FloatingInput label="NOMBRE COMPLETO" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Tu nombre completo" />
-                <FloatingInput label="CORREO ELECTRÓNICO" name="correo" value={form.correo} onChange={handleChange} type="email" placeholder="correo@ejemplo.com" />
-                <FloatingInput label="UNIVERSIDAD" name="universidad" value={form.universidad} onChange={handleChange} placeholder="Nombre de tu universidad" />
+                <FloatingInput label="Nombre Completo" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Tu nombre completo" />
+                <FloatingInput label="Correo Electrónico" name="correo" value={form.correo} onChange={handleChange} type="email" placeholder="correo@ejemplo.com" />
+                <FloatingInput label="Universidad" name="universidad" value={form.universidad} onChange={handleChange} placeholder="Nombre de tu universidad" />
                 <FloatingSelect
-                  label="CICLO ACADÉMICO"
+                  label="Ciclo Académico"
                   name="ciclo"
                   value={form.ciclo}
                   onChange={handleChange}
+                  textIndent= "2px"
                   options={["6", "7", "8", "9", "10"]}
                 />
                 <div className="relative">
                   <div className="relative">
+                    <label className="absolute left-0 top-0 text-sm text-gray-500 pointer-events-none">
+    Área
+  </label>
                     <select
                       value={form.areaId}
                       onChange={(e) => {
@@ -290,8 +282,11 @@ export default function Perfil() {
                           areaId: selected.id
                         }));
                       }}
-                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 outline-none appearance-none"
-                      style={{ borderColor: "#E2E8F0" }}
+                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-2 text-sm text-gray-800 outline-none appearance-none"
+                      style={{
+                        borderColor: "#E2E8F0",
+                        textIndent: "2px"
+                      }}
                     >
                       <option value="">Selecciona área</option>
                       {areas.map(a => (
@@ -304,6 +299,9 @@ export default function Perfil() {
                 </div>
                 <div className="relative">
                   <div className="relative">
+                    <label className="absolute left-0 top-0 text-sm text-gray-500 pointer-events-none">
+Carrera
+  </label>
                     <select
                       value={form.carreraId}
                       onChange={(e) => {
@@ -316,8 +314,11 @@ export default function Perfil() {
                           carreraId: selected.id
                         }));
                       }}
-                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 outline-none appearance-none"
-                      style={{ borderColor: "#E2E8F0" }}
+                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-2 text-sm text-gray-800 outline-none appearance-none"
+                      style={{
+                        borderColor: "#E2E8F0",
+                        textIndent: "6px"
+                      }}
                     >
                       <option value="">Selecciona carrera</option>
                       {carreras.map(c => (
@@ -330,6 +331,9 @@ export default function Perfil() {
                 </div>
                 <div className="relative">
                   <div className="relative">
+                    <label className="absolute left-0 top-0 text-sm text-gray-500 pointer-events-none">
+    Disponibilidad
+  </label>
                     <select
                       value={form.disponibilidadId}
                       onChange={(e) => {
@@ -342,8 +346,11 @@ export default function Perfil() {
                           disponibilidadId: selected.id
                         }));
                       }}
-                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-0 text-sm text-gray-800 outline-none appearance-none"
-                      style={{ borderColor: "#E2E8F0" }}
+                      className="w-full border-0 border-b-2 bg-transparent pt-5 pb-2 px-2 text-sm text-gray-800 outline-none appearance-none"
+                      style={{
+                        borderColor: "#E2E8F0",
+                        textIndent: "6px"
+                      }}
                     >
                       <option value="">Selecciona Disponibilidad</option>
                       {disponibilidad.map(d => (
@@ -363,7 +370,7 @@ export default function Perfil() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
           <div className="p-8">
-            <SectionTitle icon="🔗" title="PRESENCIA DIGITAL" subtitle="Perfiles y documentos profesionales" />
+            <SectionTitle icon="🔗" title="Presencia Digital" subtitle="Perfiles y documentos profesionales" />
 
             <div className="grid sm:grid-cols-3 gap-6">
               {/* LinkedIn */}
@@ -415,7 +422,7 @@ export default function Perfil() {
                     />
                   </div>
                 </div>
-              </div>  
+              </div>
             </div>
           </div>
         </div>
@@ -424,23 +431,23 @@ export default function Perfil() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
           <div className="p-8">
-            <SectionTitle title="PERFIL PROFESIONAL" subtitle="Presiona Enter para agregar cada elemento" />
+            <SectionTitle title="Perfil Profesional" subtitle="Presiona Enter para agregar cada elemento" />
 
             <div className="space-y-8">
 
-  {/* TEXTAREAS FULL WIDTH */}
-  <ListaTag tipo="descripcion" config={listaConfig.descripcion} items={listas.descripcion} setListas={setListas} />
-  <ListaTag tipo="motivaciones" config={listaConfig.motivaciones} items={listas.motivaciones} setListas={setListas} />
-  <ListaTag tipo="experiencia" config={listaConfig.experiencia} items={listas.experiencia} setListas={setListas} />
-  
+              {/* TEXTAREAS FULL WIDTH */}
+              <ListaTag tipo="descripcion" config={listaConfig.descripcion} items={listas.descripcion} setListas={setListas} />
+              <ListaTag tipo="motivaciones" config={listaConfig.motivaciones} items={listas.motivaciones} setListas={setListas} />
+              <ListaTag tipo="experiencia" config={listaConfig.experiencia} items={listas.experiencia} setListas={setListas} />
 
-  {/* TAGS EN MITAD */}
-  <div className="grid sm:grid-cols-2 gap-6">
-    <ListaTag tipo="cursos" config={listaConfig.cursos} items={listas.cursos} setListas={setListas} />
-    <ListaTag tipo="capacitaciones" config={listaConfig.capacitaciones} items={listas.capacitaciones} setListas={setListas} />
-  </div>
 
-</div>
+              {/* TAGS EN MITAD */}
+              <div className="grid sm:grid-cols-2 gap-6">
+                <ListaTag tipo="cursos" config={listaConfig.cursos} items={listas.cursos} setListas={setListas} />
+                <ListaTag tipo="capacitaciones" config={listaConfig.capacitaciones} items={listas.capacitaciones} setListas={setListas} />
+              </div>
+
+            </div>
           </div>
         </div>
 
@@ -450,17 +457,17 @@ export default function Perfil() {
             Los cambios se guardan en tu perfil de candidato
           </p>
           <button
-  onClick={guardar}
-  className="relative flex items-center gap-2.5 px-8 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 active:scale-95 shadow-lg"
-  style={{
-    background: saved
-      ? `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_MID} 100%)`
-      : `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_MID} 100%)`,
-    boxShadow: "0 4px 20px rgba(0,48,135,0.35)",
-  }}
->
+            onClick={guardar}
+            className="relative flex items-center gap-2.5 px-8 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 active:scale-95 shadow-lg"
+            style={{
+              background: saved
+                ? `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_MID} 100%)`
+                : `linear-gradient(135deg, ${BLUE} 0%, ${BLUE_MID} 100%)`,
+              boxShadow: "0 4px 20px rgba(0,48,135,0.35)",
+            }}
+          >
             {saved ? "¡Perfil actualizado!" : "Actualizar perfil"}
-</button>
+          </button>
         </div>
 
       </div>
@@ -475,9 +482,9 @@ function ListaTag({ tipo, config, items, setListas }) {
 
   return (
     <div className="w-full">
-      
+
       {/* LABEL */}
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-sm text-gray-500 mb-2">
         {config.label}
       </label>
 

@@ -1,8 +1,8 @@
 import { User, Eye, MessageCircle } from "lucide-react";
 import { useAuth } from "../../Context/AuthContext";
 
-const O = "#F47920";
-const B = "#003087";
+const O = "#FF5000";
+const B = "#002A80";
 
 export default function DashboardNav({ section, setSection }) {
   const { user } = useAuth();
@@ -18,7 +18,6 @@ export default function DashboardNav({ section, setSection }) {
       className="
         w-full md:w-64
         min-h-auto md:min-h-screen
-        bg-[#F4F6FB]
         px-3 sm:px-4 py-4 sm:py-6
         flex flex-col
       "
@@ -67,7 +66,7 @@ export default function DashboardNav({ section, setSection }) {
               style={
                 active
                   ? {
-                      background: `linear-gradient(135deg, ${B}, #0a6fd8)`,
+                      background: `#002A80`,
                       color: "white",
                     }
                   : {}

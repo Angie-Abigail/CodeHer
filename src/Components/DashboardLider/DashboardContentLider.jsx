@@ -6,7 +6,7 @@ export default function DashboardContentLider({ section }) {
   return (
     <div className="h-full">
 
-      {section === "mensajes" && <Mensajes />}  {/* 👈 ESTO */}
+      {section === "mensajes" && <Mensajes />}
       
       {section === "guardados" && <Guardados />}
 

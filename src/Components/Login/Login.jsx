@@ -42,7 +42,7 @@ export default function Login({ onClose, irARegistro }) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl relative"
+        className="bg-white rounded-2xl p-8 w-[90%] max-w-md shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
 

@@ -80,9 +80,7 @@ export default function Mensajes() {
     const unsub = onSnapshot(q, (snap) => {
       setMensajes(snap.docs.map(d => ({ id: d.id, ...d.data() })));
 
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
+      
     });
 
     return () => unsub();
@@ -125,12 +123,20 @@ export default function Mensajes() {
     {/* ───────── SIDEBAR / LISTA ───────── */}
     <div
       className={`
-        w-full sm:w-80 bg-[#F7F8FA] flex flex-col
+        w-full sm:w-80 flex flex-col
         ${mobileView === "chat" ? "hidden sm:flex" : "flex"}
       `}
     >
       <div className="px-5 py-4 text-sm font-semibold text-gray-700">
-        Mensajes
+                {/* HEADER */}
+        <div className="mb-5 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#003087]">
+            Mensajes
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Practicantes que haz contactado
+          </p>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">

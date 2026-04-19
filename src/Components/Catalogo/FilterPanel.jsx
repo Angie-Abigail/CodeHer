@@ -188,14 +188,14 @@ const FilterPanel = ({
           className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-white text-sm font-semibold shadow-md transition-all"
           style={{ background: BLUE }}
         >
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 px-1.5">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
               <path d="M4 6h16M7 12h10M10 18h4" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
             Filtros
           </span>
           {totalFiltros > 0 && (
-            <span className="bg-white text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ color: BLUE }}>
+            <span className="bg-white text-[11px] font-bold px-2 py-0.5 rounded-full " style={{ color: BLUE }}>
               {totalFiltros}
             </span>
           )}
