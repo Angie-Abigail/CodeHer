@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import logo from "../../assets/logo.png"
 
 export default function Login({ onClose, irARegistro }) {
-  const { login, loginGoogle } = useAuth();
+  const { login } = useAuth();
 
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
@@ -20,13 +20,8 @@ export default function Login({ onClose, irARegistro }) {
     }
   };
 
-  const handleGoogle = async () => {
-    try {
-      await loginGoogle();
-      onClose();
-    } catch (err) {
-      setError("Error con Google");
-    }
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleLogin();
   };
 
   useEffect(() => {
@@ -56,8 +51,8 @@ export default function Login({ onClose, irARegistro }) {
 
         {/* LOGO */}
         <div className="bg-[#002A80] -mx-8 -mt-8 mb-4 p-1 rounded-t-2xl flex justify-center">
-  <img src={logo} alt="logo" className="h-10 w-auto object-contain" />
-</div>
+          <img src={logo} alt="logo" className="h-10 w-auto object-contain" />
+        </div>
 
         <h3 className="text-center text-xl font-semibold text-gray-900">
           Iniciar sesión
@@ -75,7 +70,6 @@ export default function Login({ onClose, irARegistro }) {
             <label className="text-sm text-gray-700 font-medium">
               Correo electrónico
             </label>
-
             <div className="relative mt-1">
               <Mail className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
               <input
@@ -85,6 +79,7 @@ export default function Login({ onClose, irARegistro }) {
                            text-gray-900 placeholder-gray-400
                            focus:outline-none focus:ring-2 focus:ring-blue-900"
                 onChange={(e) => setCorreo(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </div>
           </div>
@@ -94,10 +89,8 @@ export default function Login({ onClose, irARegistro }) {
             <label className="text-sm text-gray-700 font-medium">
               Contraseña
             </label>
-
             <div className="relative mt-1">
               <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Ingresa tu contraseña"
@@ -105,9 +98,8 @@ export default function Login({ onClose, irARegistro }) {
                            text-gray-900 placeholder-gray-400
                            focus:outline-none focus:ring-2 focus:ring-blue-900"
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
-
-              {/* 👁️ OJITO */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}

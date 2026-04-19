@@ -8,42 +8,27 @@ import {
   getDocs,
   addDoc,
   updateDoc,
-  doc
+  doc,
+  getDoc
 } from "firebase/firestore";
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signOut
-} from "firebase/auth";
-
 const AuthContext = createContext();
+
+const SESSION_KEY = "bcp_session_uid"; // clave en localStorage
+
 const getAreas = async () => {
   const snapshot = await getDocs(collection(db, "areas"));
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 };
-
 const getCarreras = async () => {
   const snapshot = await getDocs(collection(db, "carreras"));
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 };
-
 const getDisponibilidad = async () => {
   const snapshot = await getDocs(collection(db, "disponibilidad"));
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 };
 
 export const useAuth = () => useContext(AuthContext);
@@ -52,98 +37,54 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const auth = getAuth();
-
-  // 🔥 TRAER USUARIO DESDE FIRESTORE
-  const fetchUserFromDB = async (email) => {
-    const q = query(
-      collection(db, "usuariosbcp"),
-      where("correo", "==", email)
-    );
-
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) return null;
-
-    const docData = snapshot.docs[0];
-
-    return {
-      uid: docData.id,
-      ...docData.data()
-    };
+  // Busca usuario en Firestore por su doc ID
+  const fetchUserById = async (uid) => {
+    const docRef = doc(db, "usuariosbcp", uid);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
+    return { uid: snap.id, ...snap.data() };
   };
 
-  // 🔁 SESIÓN PERSISTENTE (FIX PRINCIPAL)
+  // 🔁 AL CARGAR LA APP — restaurar sesión desde localStorage
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const restore = async () => {
       try {
-        setLoading(true);
+        const savedUid = localStorage.getItem(SESSION_KEY);
+        if (!savedUid) return;
 
-        if (!firebaseUser) {
-          setUser(null);
-          return;
-        }
-
-        const dbUser = await fetchUserFromDB(firebaseUser.email);
-
-        // ✅ SI EXISTE EN FIRESTORE
-        if (dbUser) {
-          setUser(dbUser);
-        } 
-        // ✅ FALLBACK SI NO EXISTE O FALLA FIRESTORE
-        else {
-          setUser({
-            uid: firebaseUser.uid,
-            nombre: firebaseUser.displayName,
-            correo: firebaseUser.email,
-            foto: firebaseUser.photoURL,
-            rol: "usuario"
-          });
-        }
-
-      } catch (error) {
-        console.error("Error cargando usuario:", error);
-
-        // 🔥 FALLBACK DE EMERGENCIA
-        if (firebaseUser) {
-          setUser({
-            uid: firebaseUser.uid,
-            nombre: firebaseUser.displayName,
-            correo: firebaseUser.email,
-            foto: firebaseUser.photoURL,
-            rol: "usuario"
-          });
+        const userData = await fetchUserById(savedUid);
+        if (userData) {
+          setUser(userData);
         } else {
-          setUser(null);
+          // El uid guardado ya no existe en Firestore
+          localStorage.removeItem(SESSION_KEY);
         }
-
+      } catch (error) {
+        console.error("Error restaurando sesión:", error);
+        localStorage.removeItem(SESSION_KEY);
       } finally {
         setLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
+    restore();
   }, []);
 
-  // 🔐 LOGIN NORMAL
+  // 🔐 LOGIN
   const login = async (correo, contraseña) => {
     const q = query(
       collection(db, "usuariosbcp"),
       where("correo", "==", correo),
       where("contraseña", "==", contraseña)
     );
-
     const snapshot = await getDocs(q);
-
     if (snapshot.empty) throw new Error("Credenciales incorrectas");
 
     const docData = snapshot.docs[0];
+    const userData = { uid: docData.id, ...docData.data() };
 
-    const userData = {
-      uid: docData.id,
-      ...docData.data()
-    };
-
+    // Guardar uid en localStorage para persistir entre recargas
+    localStorage.setItem(SESSION_KEY, docData.id);
     setUser(userData);
     return userData;
   };
@@ -152,19 +93,15 @@ export function AuthProvider({ children }) {
   const register = async (data) => {
     let fotoURL = "";
     let cvURL = "";
+    const storage = getStorage();
 
     if (data.foto) {
-      const storage = getStorage();
       const storageRef = ref(storage, `usuarios/${Date.now()}_${data.foto.name}`);
-
       await uploadBytes(storageRef, data.foto);
       fotoURL = await getDownloadURL(storageRef);
     }
-
     if (data.cv) {
-      const storage = getStorage();
       const storageRef = ref(storage, `cv/${Date.now()}_${data.cv.name}`);
-
       await uploadBytes(storageRef, data.cv);
       cvURL = await getDownloadURL(storageRef);
     }
@@ -189,88 +126,50 @@ export function AuthProvider({ children }) {
     };
 
     const docRef = await addDoc(collection(db, "usuariosbcp"), nuevoUsuario);
+    const userData = { uid: docRef.id, ...nuevoUsuario };
 
-    setUser({
-      uid: docRef.id,
-      ...nuevoUsuario
-    });
+    localStorage.setItem(SESSION_KEY, docRef.id);
+    setUser(userData);
+    return userData;
   };
 
   // ✏️ UPDATE
   const updateUser = async (id, newData) => {
     if (!id) return;
-
     const refDoc = doc(db, "usuariosbcp", id);
-
+    const storage = getStorage();
     let fotoURL = newData.foto;
     let cvURL = newData.cv;
-
-    const storage = getStorage();
 
     if (newData.foto instanceof File) {
       const storageRef = ref(storage, `usuarios/${Date.now()}_${newData.foto.name}`);
       await uploadBytes(storageRef, newData.foto);
       fotoURL = await getDownloadURL(storageRef);
     }
-
     if (newData.cv instanceof File) {
       const storageRef = ref(storage, `cv/${Date.now()}_${newData.cv.name}`);
       await uploadBytes(storageRef, newData.cv);
       cvURL = await getDownloadURL(storageRef);
     }
 
-    const dataToSave = {
-      ...newData,
-      foto: fotoURL || "",
-      cv: cvURL || ""
-    };
-
+    const dataToSave = { ...newData, foto: fotoURL || "", cv: cvURL || "" };
     await updateDoc(refDoc, dataToSave);
-
-    setUser((prev) => ({
-      ...prev,
-      ...dataToSave
-    }));
-  };
-
-  // 🔵 GOOGLE LOGIN
-  const loginGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-
-    const result = await signInWithPopup(auth, provider);
-    const googleUser = result.user;
-
-    const dbUser = await fetchUserFromDB(googleUser.email);
-
-    if (dbUser) {
-      setUser(dbUser);
-    } else {
-      const newUserRef = await addDoc(collection(db, "usuariosbcp"), {
-        nombre: googleUser.displayName,
-        correo: googleUser.email,
-        foto: googleUser.photoURL,
-        rol: "usuario",
-        experiencia: [],
-        cursos: [],
-        capacitaciones: [],
-        motivaciones: [],
-        descripcion: []
-      });
-
-      setUser({
-        uid: newUserRef.id,
-        nombre: googleUser.displayName,
-        correo: googleUser.email,
-        foto: googleUser.photoURL,
-        rol: "usuario"
-      });
-    }
+    setUser((prev) => ({ ...prev, ...dataToSave }));
   };
 
   // 🔴 LOGOUT
-  const logout = async () => {
-    await signOut(auth);
+  const logout = () => {
+    localStorage.removeItem(SESSION_KEY);
     setUser(null);
+  };
+
+  // Mantenido por compatibilidad con código existente
+  const fetchUserFromDB = async (email) => {
+    const q = query(collection(db, "usuariosbcp"), where("correo", "==", email));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    const d = snapshot.docs[0];
+    return { uid: d.id, ...d.data() };
   };
 
   return (
@@ -281,7 +180,6 @@ export function AuthProvider({ children }) {
         login,
         register,
         updateUser,
-        loginGoogle,
         logout,
         fetchUserFromDB,
         getAreas,
